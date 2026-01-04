@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../auth.service';
 
 @Component({
   selector: 'app-register',
@@ -14,16 +15,17 @@ export class Register implements OnInit {
   showPassword = false;
   loading = false;
   errorMessage: string | null = null;
-  termsAccepted = false;
 
-  constructor(private fb: FormBuilder, private router: Router) { }
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: AuthService
+  ) { }
 
   ngOnInit() {
     this.registerForm = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(2)]],
-      apellido: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
       terms: [false, [Validators.requiredTrue]]
     });
   }
@@ -55,23 +57,23 @@ export class Register implements OnInit {
     this.loading = true;
     this.errorMessage = null;
 
-    // Simular registro
-    setTimeout(() => {
-      const { nombre, apellido, email } = this.registerForm.value;
+    const { email, password } = this.registerForm.value;
 
-      // Mock registro: aceptar cualquier dato válido
-      if (nombre && apellido && email) {
+    this.authService.register(email, password).subscribe({
+      next: (user) => {
         this.loading = false;
-        // Guardar datos de usuario (opcional)
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('userEmail', email);
-        localStorage.setItem('userName', `${nombre} ${apellido}`);
-        // Redirigir al dashboard
+        // Redirect to dashboard
         this.router.navigate(['/dashboard']);
-      } else {
+      },
+      error: (error) => {
         this.loading = false;
-        this.errorMessage = 'Error al crear la cuenta. Por favor intenta de nuevo.';
+        if (error.status === 0) {
+          this.errorMessage = 'Error de conexión. Asegúrate de que json-server esté corriendo.';
+        } else {
+          this.errorMessage = 'Error al crear la cuenta. Por favor intenta de nuevo.';
+        }
+        console.error('Register error:', error);
       }
-    }, 1500);
+    });
   }
 }

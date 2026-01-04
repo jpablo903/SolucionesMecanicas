@@ -1,0 +1,28 @@
+/* Dashboard Layout Styles */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+aside {
+    position: relative;
+}
+
+@media (max-width: 768px) {
+    aside {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 50;
+        transform: translateX(-100%);
+    }
+
+    aside.w-64 {
+        transform: translateX(0);
+    }
+}

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../auth.service';
+import { User } from '../../features/dashboard/dashboard.models';
 
 @Component({
   selector: 'app-navbar',
@@ -11,7 +12,7 @@ import { AuthService } from '../../auth.service';
 })
 export class Navbar implements OnInit {
   isLoggedIn = false;
-  userEmail = '';
+  currentUser: User | null = null;
   isMobileMenuOpen = false;
 
   constructor(private authService: AuthService) { }
@@ -21,8 +22,8 @@ export class Navbar implements OnInit {
       this.isLoggedIn = status;
     });
 
-    this.authService.currentUserEmail$.subscribe((email: string) => {
-      this.userEmail = email;
+    this.authService.currentUser$.subscribe((user: User | null) => {
+      this.currentUser = user;
     });
   }
 

@@ -1,0 +1,56 @@
+{
+  "users": [
+    {
+      "id": "b973",
+      "email": "test@test",
+      "password": "testing123",
+      "firstName": "Oscar",
+      "lastName": "Insaurralde",
+      "phone": "1166336633",
+      "createdAt": "2026-01-04T13:15:45.109Z"
+    },
+    {
+      "id": "a85e",
+      "email": "test@example.com",
+      "password": "password123",
+      "firstName": "Nuevo",
+      "lastName": "Usuario",
+      "phone": "",
+      "createdAt": "2026-01-04T13:59:52.999Z"
+    }
+  ],
+  "motorcycles": [
+    {
+      "id": "fe9f",
+      "userId": "b973",
+      "brand": "Yamaha",
+      "model": "YBR 125",
+      "version": "ED",
+      "year": 2018,
+      "licensePlate": "LNR995",
+      "displayName": "Yamaha YBR 125 (2018) - LNR995"
+    },
+    {
+      "id": "19e5",
+      "userId": "a85e",
+      "brand": "Honda",
+      "model": "CB500F",
+      "version": "",
+      "year": 2023,
+      "licensePlate": "TEST123",
+      "displayName": "Honda CB500F (2023) - TEST123"
+    },
+    {
+      "id": "f033",
+      "userId": "b973",
+      "brand": "BMW",
+      "model": "F1200",
+      "version": "Sport",
+      "year": 2020,
+      "licensePlate": "AP568AS",
+      "displayName": "BMW F1200 (2020) - AP568AS"
+    }
+  ],
+  "appointments": [],
+  "serviceHistory": []
+}

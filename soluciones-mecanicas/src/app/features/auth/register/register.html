@@ -86,44 +86,6 @@
                 </div>
 
                 <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="flex flex-col gap-4">
-                    <!-- Nombre y Apellido -->
-                    <div class="flex gap-4">
-                        <div class="flex-1 flex flex-col gap-2">
-                            <label class="text-white text-sm font-medium" for="nombre">Nombre</label>
-                            <div class="relative">
-                                <div
-                                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                                    <span class="material-symbols-outlined text-[20px]">person</span>
-                                </div>
-                                <input formControlName="nombre"
-                                    class="w-full bg-[#111318] border border-[#3c4453] rounded-lg py-2.5 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm"
-                                    id="nombre" placeholder="Juan" type="text" />
-                            </div>
-                            <div *ngIf="registerForm.get('nombre')?.invalid && registerForm.get('nombre')?.touched"
-                                class="text-red-500 text-xs mt-1">
-                                <span *ngIf="registerForm.get('nombre')?.errors?.['required']">El nombre es
-                                    requerido</span>
-                                <span *ngIf="registerForm.get('nombre')?.errors?.['minlength']">Mínimo 2
-                                    caracteres</span>
-                            </div>
-                        </div>
-                        <div class="flex-1 flex flex-col gap-2">
-                            <label class="text-white text-sm font-medium" for="apellido">Apellido</label>
-                            <div class="relative">
-                                <input formControlName="apellido"
-                                    class="w-full bg-[#111318] border border-[#3c4453] rounded-lg py-2.5 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm"
-                                    id="apellido" placeholder="Pérez" type="text" />
-                            </div>
-                            <div *ngIf="registerForm.get('apellido')?.invalid && registerForm.get('apellido')?.touched"
-                                class="text-red-500 text-xs mt-1">
-                                <span *ngIf="registerForm.get('apellido')?.errors?.['required']">El apellido es
-                                    requerido</span>
-                                <span *ngIf="registerForm.get('apellido')?.errors?.['minlength']">Mínimo 2
-                                    caracteres</span>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Email -->
                     <div class="flex flex-col gap-2">
                         <label class="text-white text-sm font-medium" for="email">Correo Electrónico</label>
@@ -160,12 +122,12 @@
                                     'visibility' }}</span>
                             </button>
                         </div>
-                        <p class="text-xs text-gray-500 mt-1">Debe tener al menos 8 caracteres</p>
+                        <p class="text-xs text-gray-500 mt-1">Debe tener al menos 6 caracteres</p>
                         <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
                             class="text-red-500 text-xs">
                             <span *ngIf="registerForm.get('password')?.errors?.['required']">La contraseña es
                                 requerida</span>
-                            <span *ngIf="registerForm.get('password')?.errors?.['minlength']">Mínimo 8 caracteres</span>
+                            <span *ngIf="registerForm.get('password')?.errors?.['minlength']">Mínimo 6 caracteres</span>
                         </div>
                     </div>
 

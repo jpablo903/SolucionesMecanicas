@@ -1,0 +1,123 @@
+<div class="min-h-screen bg-background-dark p-4 md:p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-white text-3xl font-bold mb-2">Configuración</h1>
+        <p class="text-text-secondary mb-8">Gestiona tu cuenta y preferencias</p>
+
+        <!-- Success/Error Messages -->
+        <div *ngIf="successMessage"
+            class="mb-6 p-4 rounded-lg bg-green-500/10 border border-green-500/30 text-green-500 text-sm">
+            {{ successMessage }}
+        </div>
+        <div *ngIf="errorMessage"
+            class="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 text-sm">
+            {{ errorMessage }}
+        </div>
+
+        <!-- Profile Section -->
+        <div class=" bg-surface-dark border border-border-dark rounded-xl p-6 mb-6">
+            <h2 class="text-white text-xl font-bold mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">person</span>
+                Perfil Personal
+            </h2>
+
+            <form [formGroup]="profileForm" (ngSubmit)="updateProfile()" class="space-y-4">
+                <!-- First Name -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-white text-sm font-medium" for="firstName">Nombre</label>
+                    <input formControlName="firstName"
+                        class="w-full bg-[#111318] border border-[#3c4453] rounded-lg py-2.5 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm"
+                        id="firstName" placeholder="Nombre" type="text" />
+                    <div *ngIf="profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched"
+                        class="text-red-500 text-xs">
+                        <span *ngIf="profileForm.get('firstName')?.errors?.['required']">El nombre es requerido</span>
+                        <span *ngIf="profileForm.get('firstName')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+                    </div>
+                </div>
+
+                <!-- Last Name -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-white text-sm font-medium" for="lastName">Apellido</label>
+                    <input formControlName="lastName"
+                        class="w-full bg-[#111318] border border-[#3c4453] rounded-lg py-2.5 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm"
+                        id="lastName" placeholder="Apellido" type="text" />
+                    <div *ngIf="profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched"
+                        class="text-red-500 text-xs">
+                        <span *ngIf="profileForm.get('lastName')?.errors?.['required']">El apellido es requerido</span>
+                        <span *ngIf="profileForm.get('lastName')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+                    </div>
+                </div>
+
+                <!-- Phone -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-white text-sm font-medium" for="phone">Teléfono</label>
+                    <input formControlName="phone"
+                        class="w-full bg-[#111318] border border-[#3c4453] rounded-lg py-2.5 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm"
+                        id="phone" placeholder="1234567890" type="tel" />
+                    <div *ngIf="profileForm.get('phone')?.invalid && profileForm.get('phone')?.touched"
+                        class="text-red-500 text-xs">
+                        <span *ngIf="profileForm.get('phone')?.errors?.['pattern']">Debe ser un número de 10
+                            dígitos</span>
+                    </div>
+                </div>
+
+                <!-- Email (Read-only) -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-white text-sm font-medium" for="email">Email (No editable)</label>
+                    <input formControlName="email"
+                        class="w-full bg-[#1c1f26] border border-[#3c4453] rounded-lg py-2.5 px-4 text-gray-500 text-sm cursor-not-allowed"
+                        id="email" type="email" readonly />
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" [disabled]="loading || profileForm.invalid"
+                    class="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all shadow-lg shadow-primary/20">
+                    <span *ngIf="loading" class="material-symbols-outlined animate-spin">refresh</span>
+                    <span>{{ loading ? 'Guardando...' : 'Guardar Cambios' }}</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Security Section -->
+        <div class="bg-surface-dark border border-border-dark rounded-xl p-6 mb-6">
+            <h2 class="text-white text-xl font-bold mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">lock</span>
+                Seguridad
+            </h2>
+
+            <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="space-y-4">
+                <!-- New Password -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-white text-sm font-medium" for="newPassword">Nueva Contraseña</label>
+                    <input formControlName="newPassword"
+                        class="w-full bg-[#111318] border border-[#3c4453] rounded-lg py-2.5 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm"
+                        id="newPassword" placeholder="••••••••" type="password" />
+                    <div *ngIf="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched"
+                        class="text-red-500 text-xs">
+                        <span *ngIf="passwordForm.get('newPassword')?.errors?.['required']">La contraseña es
+                            requerida</span>
+                        <span *ngIf="passwordForm.get('newPassword')?.errors?.['minlength']">Mínimo 6 caracteres</span>
+                    </div>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-white text-sm font-medium" for="confirmPassword">Confirmar Contraseña</label>
+                    <input formControlName="confirmPassword"
+                        class="w-full bg-[#111318] border border-[#3c4453] rounded-lg py-2.5 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm"
+                        id="confirmPassword" placeholder="••••••••" type="password" />
+                    <div *ngIf="passwordForm.errors?.['passwordMismatch'] && passwordForm.get('confirmPassword')?.touched"
+                        class="text-red-500 text-xs">
+                        Las contraseñas no coinciden
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" [disabled]="loading || passwordForm.invalid"
+                    class="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all shadow-lg shadow-primary/20">
+                    <span *ngIf="loading" class="material-symbols-outlined animate-spin">refresh</span>
+                    <span>{{ loading ? 'Cambiando...' : 'Cambiar Contraseña' }}</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -37,13 +37,20 @@
                 </button>
 
                 <!-- User info - shown when logged in -->
-                <div *ngIf="isLoggedIn"
-                    class="hidden md:flex items-center gap-2 px-3 h-9 rounded-lg bg-gray-100 dark:bg-gray-800">
-                    <span class="material-symbols-outlined text-primary text-[18px]">account_circle</span>
-                    <span class="text-slate-900 dark:text-white text-sm font-medium">{{ userEmail }}</span>
+                <!-- User info - shown when logged in -->
+                <div *ngIf="isLoggedIn" class="flex items-center gap-2">
+                    <a routerLink="/dashboard"
+                        class="hidden md:flex items-center gap-2 px-3 h-9 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer group">
+                        <span
+                            class="material-symbols-outlined text-primary group-hover:text-blue-600 transition-colors text-[18px]">account_circle</span>
+                        <span
+                            class="text-slate-900 dark:text-white group-hover:text-primary transition-colors text-sm font-medium">{{
+                            currentUser?.email }}</span>
+                    </a>
                     <button (click)="logout()"
-                        class="ml-2 text-slate-600 dark:text-gray-400 hover:text-red-500 transition-colors">
-                        <span class="material-symbols-outlined text-[18px]">logout</span>
+                        class="ml-2 p-1.5 rounded-lg text-slate-600 dark:text-gray-400 hover:text-red-500 hover:bg-red-500/10 transition-all"
+                        title="Cerrar sesión">
+                        <span class="material-symbols-outlined text-[20px]">logout</span>
                     </button>
                 </div>
 
@@ -83,14 +90,16 @@
                     </button>
 
                     <!-- User info - shown when logged in -->
+                    <!-- User info - shown when logged in -->
                     <div *ngIf="isLoggedIn"
                         class="flex items-center justify-between px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800">
-                        <div class="flex items-center gap-2">
+                        <a routerLink="/dashboard" (click)="toggleMobileMenu()" class="flex items-center gap-2 flex-1">
                             <span class="material-symbols-outlined text-primary text-[18px]">account_circle</span>
-                            <span class="text-slate-900 dark:text-white text-sm font-medium">{{ userEmail }}</span>
-                        </div>
+                            <span class="text-slate-900 dark:text-white text-sm font-medium">{{ currentUser?.email
+                                }}</span>
+                        </a>
                         <button (click)="logout()"
-                            class="text-slate-600 dark:text-gray-400 hover:text-red-500 transition-colors">
+                            class="text-slate-600 dark:text-gray-400 hover:text-red-500 transition-colors p-2">
                             <span class="material-symbols-outlined text-[18px]">logout</span>
                         </button>
                     </div>

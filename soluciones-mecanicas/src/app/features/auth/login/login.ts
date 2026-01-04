@@ -46,21 +46,20 @@ export class Login implements OnInit {
     this.loading = true;
     this.errorMessage = null;
 
-    // Simular autenticación
-    setTimeout(() => {
-      const email = this.loginForm.value.email;
-      const password = this.loginForm.value.password;
+    const email = this.loginForm.value.email;
+    const password = this.loginForm.value.password;
 
-      // Mock login: aceptar cualquier email/password válido
-      if (email && password) {
-        this.authService.login(email);
+    this.authService.login(email, password).subscribe({
+      next: (user) => {
         this.loading = false;
-        // Redirigir al dashboard
+        // Redirect to dashboard
         this.router.navigate(['/dashboard']);
-      } else {
+      },
+      error: (error) => {
         this.loading = false;
         this.errorMessage = 'Credenciales inválidas. Por favor intenta de nuevo.';
+        console.error('Login error:', error);
       }
-    }, 1500);
+    });
   }
 }

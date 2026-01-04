@@ -5,7 +5,13 @@ import { About } from './features/about/about';
 import { Contact } from './features/contact/contact';
 import { Login } from './features/auth/login/login';
 import { Register } from './features/auth/register/register';
-import { Dashboard } from './features/dashboard/dashboard';
+import { DashboardLayout } from './features/dashboard/dashboard-layout';
+import { Turnos } from './features/dashboard/turnos/turnos';
+import { SolicitarTurno } from './features/dashboard/solicitar-turno/solicitar-turno';
+import { Moto } from './features/dashboard/moto/moto';
+import { Historial } from './features/dashboard/historial/historial';
+import { Config } from './features/dashboard/config/config';
+import { authGuard } from './auth.guard';
 
 export const routes: Routes = [
     { path: '', component: Home },
@@ -14,6 +20,18 @@ export const routes: Routes = [
     { path: 'contacto', component: Contact },
     { path: 'login', component: Login },
     { path: 'register', component: Register },
-    { path: 'dashboard', component: Dashboard },
+    {
+        path: 'dashboard',
+        component: DashboardLayout,
+        canActivate: [authGuard],
+        children: [
+            { path: '', redirectTo: 'turnos', pathMatch: 'full' },
+            { path: 'turnos', component: Turnos },
+            { path: 'solicitar-turno', component: SolicitarTurno },
+            { path: 'moto', component: Moto },
+            { path: 'historial', component: Historial },
+            { path: 'config', component: Config }
+        ]
+    },
     { path: '**', redirectTo: '' }
 ];

@@ -1,0 +1,189 @@
+<div class="min-h-screen bg-background-dark p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-white text-3xl font-bold mb-2">Mis Motos</h1>
+                <p class="text-text-secondary">Gestiona tus motocicletas registradas</p>
+            </div>
+            <button (click)="openModal()"
+                class="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-blue-600 text-white font-bold rounded-lg transition-all shadow-lg shadow-primary/20">
+                <span class="material-symbols-outlined">add_circle</span>
+                <span>Nueva Moto</span>
+            </button>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <div *ngIf="successMessage"
+            class="mb-6 p-4 rounded-lg bg-green-500/10 border border-green-500/30 text-green-500 text-sm animate-fade-in">
+            {{ successMessage }}
+        </div>
+        <div *ngIf="errorMessage"
+            class="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 text-sm">
+            {{ errorMessage }}
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="loadingMotorcycles" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div *ngFor="let i of [1,2,3]"
+                class="bg-surface-dark border border-border-dark rounded-xl p-6 animate-pulse">
+                <div class="w-16 h-16 rounded-full bg-border-dark mb-4"></div>
+                <div class="h-6 bg-border-dark rounded mb-2 w-3/4"></div>
+                <div class="h-4 bg-border-dark rounded mb-4 w-1/2"></div>
+                <div class="space-y-2 mb-4">
+                    <div class="h-4 bg-border-dark rounded w-2/3"></div>
+                    <div class="h-4 bg-border-dark rounded w-1/2"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Motorcycles Grid -->
+        <div *ngIf="!loadingMotorcycles && motorcycles.length > 0"
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div *ngFor="let moto of motorcycles"
+                class="bg-surface-dark border border-border-dark rounded-xl overflow-hidden hover:border-primary/30 transition-all">
+                <div class="p-6">
+                    <!-- Moto Icon -->
+                    <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                        <span class="material-symbols-outlined text-4xl text-primary">two_wheeler</span>
+                    </div>
+
+                    <!-- Moto Info -->
+                    <h3 class="text-white text-xl font-bold mb-1">{{ moto.brand }} {{ moto.model }}</h3>
+                    <p *ngIf="moto.version" class="text-text-secondary text-sm mb-3">{{ moto.version }}</p>
+
+                    <div class="space-y-2 mb-4">
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="material-symbols-outlined text-text-secondary text-lg">calendar_today</span>
+                            <span class="text-white">Año {{ moto.year }}</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="material-symbols-outlined text-text-secondary text-lg">badge</span>
+                            <span class="text-white font-mono">{{ moto.licensePlate }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex gap-2 pt-4 border-t border-border-dark">
+                        <button (click)="editMoto(moto)"
+                            class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary hover:bg-blue-600 text-white rounded-lg transition-all text-sm font-medium">
+                            <span class="material-symbols-outlined text-lg">edit</span>
+                            <span>Editar</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <ng-template #emptyState>
+            <div *ngIf="!loadingMotorcycles"
+                class="bg-surface-dark border border-border-dark rounded-xl p-12 text-center">
+                <div class="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                    <span class="material-symbols-outlined text-5xl text-primary">two_wheeler</span>
+                </div>
+                <h3 class="text-white text-xl font-bold mb-2">No tienes motos registradas</h3>
+                <p class="text-text-secondary mb-6">Agrega tu primera moto para comenzar</p>
+                <button (click)="openModal()"
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-blue-600 text-white font-bold rounded-lg transition-all shadow-lg shadow-primary/20">
+                    <span class="material-symbols-outlined">add_circle</span>
+                    <span>Agregar Moto</span>
+                </button>
+            </div>
+        </ng-template>
+    </div>
+</div>
+
+<!-- Modal -->
+<div *ngIf="showModal"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
+    <div class="bg-surface-dark border border-border-dark rounded-xl w-full max-w-md shadow-2xl animate-slide-up">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-6 border-b border-border-dark">
+            <h2 class="text-white text-xl font-bold">{{ editingMotoId ? 'Editar Moto' : 'Nueva Moto' }}</h2>
+            <button (click)="closeModal()" class="text-text-secondary hover:text-white transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <form [formGroup]="motoForm" (ngSubmit)="saveMoto()" class="p-6 space-y-4">
+            <!-- Marca -->
+            <div class="flex flex-col gap-2">
+                <label class="text-white text-sm font-medium" for="brand">Marca *</label>
+                <input formControlName="brand"
+                    class="w-full bg-[#111318] border border-[#3c4453] rounded-lg py-2.5 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm"
+                    id="brand" placeholder="Honda, Yamaha, etc." type="text" />
+                <div *ngIf="motoForm.get('brand')?.invalid && motoForm.get('brand')?.touched"
+                    class="text-red-500 text-xs">
+                    <span *ngIf="motoForm.get('brand')?.errors?.['required']">La marca es requerida</span>
+                    <span *ngIf="motoForm.get('brand')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+                </div>
+            </div>
+
+            <!-- Modelo -->
+            <div class="flex flex-col gap-2">
+                <label class="text-white text-sm font-medium" for="model">Modelo *</label>
+                <input formControlName="model"
+                    class="w-full bg-[#111318] border border-[#3c4453] rounded-lg py-2.5 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm"
+                    id="model" placeholder="CB500F, MT-03, etc." type="text" />
+                <div *ngIf="motoForm.get('model')?.invalid && motoForm.get('model')?.touched"
+                    class="text-red-500 text-xs">
+                    <span *ngIf="motoForm.get('model')?.errors?.['required']">El modelo es requerido</span>
+                    <span *ngIf="motoForm.get('model')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+                </div>
+            </div>
+
+            <!-- Versión -->
+            <div class="flex flex-col gap-2">
+                <label class="text-white text-sm font-medium" for="version">Versión (Opcional)</label>
+                <input formControlName="version"
+                    class="w-full bg-[#111318] border border-[#3c4453] rounded-lg py-2.5 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm"
+                    id="version" placeholder="ABS, Sport, etc." type="text" />
+            </div>
+
+            <!-- Año y Patente -->
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Año -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-white text-sm font-medium" for="year">Año *</label>
+                    <input formControlName="year"
+                        class="w-full bg-[#111318] border border-[#3c4453] rounded-lg py-2.5 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm"
+                        id="year" placeholder="2023" type="number" />
+                    <div *ngIf="motoForm.get('year')?.invalid && motoForm.get('year')?.touched"
+                        class="text-red-500 text-xs">
+                        <span *ngIf="motoForm.get('year')?.errors?.['required']">Requerido</span>
+                        <span *ngIf="motoForm.get('year')?.errors?.['min'] || motoForm.get('year')?.errors?.['max']">Año
+                            inválido</span>
+                    </div>
+                </div>
+
+                <!-- Patente -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-white text-sm font-medium" for="licensePlate">Patente *</label>
+                    <input formControlName="licensePlate"
+                        class="w-full bg-[#111318] border border-[#3c4453] rounded-lg py-2.5 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm uppercase"
+                        id="licensePlate" placeholder="AB123CD" type="text" />
+                    <div *ngIf="motoForm.get('licensePlate')?.invalid && motoForm.get('licensePlate')?.touched"
+                        class="text-red-500 text-xs">
+                        <span *ngIf="motoForm.get('licensePlate')?.errors?.['required']">Requerida</span>
+                        <span *ngIf="motoForm.get('licensePlate')?.errors?.['minlength']">Mín. 6 caracteres</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="flex gap-3 pt-4">
+                <button type="button" (click)="closeModal()"
+                    class="flex-1 px-4 py-2.5 bg-border-dark hover:bg-[#3c4453] text-white rounded-lg transition-all font-medium">
+                    Cancelar
+                </button>
+                <button type="submit" [disabled]="loading || motoForm.invalid"
+                    class="flex-1 px-4 py-2.5 bg-primary hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-all font-medium shadow-lg shadow-primary/20">
+                    <span *ngIf="loading">Guardando...</span>
+                    <span *ngIf="!loading">{{ editingMotoId ? 'Actualizar' : 'Guardar' }}</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
