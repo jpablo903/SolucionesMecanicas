@@ -1,0 +1,120 @@
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-gradient-to-br from-gray-900 to-black">
+    <!-- Main Content Area -->
+    <div class="px-4 md:px-40 flex flex-1 justify-center py-8">
+        <div class="layout-content-container flex flex-col max-w-[960px] flex-1 justify-center">
+            <div class="@container">
+                <div class="flex flex-col gap-6 px-4 py-10 @[864px]:flex-row @[864px]:items-center">
+                    <!-- Hero Image Side -->
+                    <div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-2xl shadow-2xl shadow-black/50 @[480px]:h-auto @[480px]:min-w-[400px] @[864px]:w-1/2 @[864px]:h-[580px] relative overflow-hidden group"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCSqNnQuLpOGKQBZHDqYhWUEf-Dry5QA_4VfY0fI_hGoVaJ6n-WUETT277goM-fiKIoJJ7GSud_eh8tA_fC3qzKiYQsu0Z58tEgWXM_rT5g3W493EAmwik9XYzD3zUEokMs47hDP9fEeGqEkloxpFOqLaxYVbLXBX4KKZ_u6kFFl7SdzannqvGFQf9YVQrrF8efzXUN-zk8OtswlDye_FDNdMK5w4dlVQAqpaNvfXGNUCge3fPrdqVHbOOgrryHkX8Zt51JwSnZnqSH");'>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent group-hover:via-black/20 transition-all duration-500">
+                        </div>
+                        <div class="absolute bottom-0 left-0 p-8 w-full">
+                            <p class="text-white font-bold text-xl mb-1">Mecánica de Precisión</p>
+                            <p class="text-gray-300 text-sm">Expertos certificados listos para tu máquina.</p>
+                        </div>
+                    </div>
+
+                    <!-- Login Form Side -->
+                    <div
+                        class="flex flex-col gap-6 @[480px]:min-w-[400px] @[864px]:w-1/2 @[864px]:pl-12 justify-center">
+                        <div class="flex flex-col gap-2 text-left mb-4">
+                            <h1
+                                class="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl">
+                                Bienvenido
+                            </h1>
+                            <h2 class="text-text-secondary text-sm font-normal leading-normal @[480px]:text-base">
+                                Ingresa tus credenciales para gestionar tus citas y servicios.
+                            </h2>
+                        </div>
+
+                        <!-- Error Message -->
+                        <div *ngIf="errorMessage"
+                            class="mb-6 p-4 rounded-xl bg-red-900/20 border border-red-700/30 text-red-400 text-sm backdrop-blur-sm">
+                            {{ errorMessage }}
+                        </div>
+
+                        <!-- Form Fields -->
+                        <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="flex flex-col gap-5">
+                            <!-- Email Field -->
+                            <label class="flex flex-col w-full">
+                                <p class="text-white text-base font-medium leading-normal pb-3">Correo electrónico</p>
+                                <div
+                                    class="flex w-full items-stretch rounded-xl h-14 bg-gray-800/50 border border-gray-700 focus-within:border-blue-500 focus-within:border-2 transition-all overflow-hidden backdrop-blur-sm">
+                                    <div class="text-gray-400 flex items-center justify-center pl-4 pr-3">
+                                        <span class="material-symbols-outlined text-xl">mail</span>
+                                    </div>
+                                    <input formControlName="email"
+                                        class="flex w-full bg-transparent text-white focus:outline-none border-none h-full placeholder:text-gray-500 px-2 text-base font-normal"
+                                        placeholder="nombre@ejemplo.com" type="email" />
+                                </div>
+                                <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+                                    class="text-red-400 text-xs mt-2 px-1">
+                                    <span *ngIf="loginForm.get('email')?.errors?.['required']">El email es
+                                        requerido</span>
+                                    <span *ngIf="loginForm.get('email')?.errors?.['email']">Email inválido</span>
+                                </div>
+                            </label>
+
+                            <!-- Password Field -->
+                            <label class="flex flex-col w-full">
+                                <p class="text-white text-base font-medium leading-normal pb-3">Contraseña</p>
+                                <div
+                                    class="flex w-full items-stretch rounded-xl h-14 bg-gray-800/50 border border-gray-700 focus-within:border-blue-500 focus-within:border-2 transition-all overflow-hidden backdrop-blur-sm">
+                                    <div class="text-gray-400 flex items-center justify-center pl-4 pr-3">
+                                        <span class="material-symbols-outlined text-xl">lock</span>
+                                    </div>
+                                    <input formControlName="password"
+                                        class="flex w-full bg-transparent text-white focus:outline-none border-none h-full placeholder:text-gray-500 px-2 text-base font-normal"
+                                        placeholder="••••••••" [type]="showPassword ? 'text' : 'password'" />
+                                    <div (click)="togglePasswordVisibility()"
+                                        class="text-gray-400 flex items-center justify-center pr-4 pl-3 cursor-pointer hover:text-white transition-colors">
+                                        <span class="material-symbols-outlined text-[22px]">{{ showPassword ?
+                                            'visibility_off' : 'visibility' }}</span>
+                                    </div>
+                                </div>
+                                <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+                                    class="text-red-400 text-xs mt-2 px-1">
+                                    <span *ngIf="loginForm.get('password')?.errors?.['required']">La contraseña es
+                                        requerida</span>
+                                    <span *ngIf="loginForm.get('password')?.errors?.['minlength']">La contraseña debe
+                                        tener al menos 6 caracteres</span>
+                                </div>
+                            </label>
+
+                            <!-- Meta Options -->
+                            <div class="flex items-center justify-between mt-1">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        class="rounded border-gray-600 bg-input-bg text-primary focus:ring-primary/50 size-4"
+                                        type="checkbox" />
+                                    <span class="text-sm text-text-secondary select-none">Recuérdame</span>
+                                </label>
+                                <a class="text-primary text-sm font-medium hover:underline hover:text-primary/80"
+                                    href="#">
+                                    ¿Olvidaste tu contraseña?
+                                </a>
+                            </div>
+
+                            <!-- Action Button -->
+                            <button type="submit" [disabled]="loading"
+                                class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/20 mt-2">
+                                <span *ngIf="loading" class="animate-spin mr-2">⌛</span>
+                                <span class="truncate">{{ loading ? 'Accediendo...' : 'Acceder' }}</span>
+                            </button>
+
+                            <!-- Register Link -->
+                            <div class="flex items-center justify-center gap-2 mt-2">
+                                <p class="text-text-secondary text-sm">¿No tienes cuenta?</p>
+                                <a routerLink="/register" class="text-white text-sm font-bold hover:underline">
+                                    Regístrate aquí
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

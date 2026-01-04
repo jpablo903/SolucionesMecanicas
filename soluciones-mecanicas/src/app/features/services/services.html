@@ -1,0 +1,206 @@
+<main class="flex-grow flex flex-col items-center w-full">
+    <!-- Hero Section -->
+    <div class="w-full max-w-[1200px] px-4 md:px-10 py-6 md:py-10">
+        <div class="@container">
+            <div class="relative flex min-h-[400px] flex-col gap-6 overflow-hidden rounded-xl bg-cover bg-center bg-no-repeat p-8 items-center justify-center text-center shadow-2xl"
+                style='background-image: linear-gradient(rgba(0, 0, 0, 0.5) 0%, rgba(17, 22, 33, 0.9) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuCDOY-RUQUKwKqb7Uoxw5KyMIVWrbTL569Ziuyj23EQc6LCgtmeXX8Tpuda-M9qmyFztVaCJH175TQjA5B_ywtBm-nnycjFWTUz0u95KFRWXipMjXGv2iUd0lr_wwe6mj5KEcqf5b9EicZ39arxvzpzvmDw5sa6b9h4sLr3oMCpPeharls3u0takQW_gudD0Q0R_v7D6rP9qbXhiH97wXNgOcRmQRDeW02dNLKHD0TB_71VUiJAaqQhGY7RpMo_YZ_EAFrg0j9hmzOS");'>
+                <div class="flex flex-col gap-4 max-w-2xl relative z-10">
+                    <h1 class="text-white text-4xl md:text-6xl font-black leading-tight tracking-[-0.033em]">
+                        Nuestros Servicios
+                    </h1>
+                    <p class="text-gray-200 text-lg md:text-xl font-normal leading-relaxed">
+                        Mantenimiento experto para mantener tu moto en condiciones óptimas. Calidad, velocidad y
+                        transparencia en cada reparación.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pricing Cards Section -->
+    <div class="w-full max-w-[1200px] px-4 md:px-10 pb-12">
+        <div class="flex flex-col gap-4 mb-8">
+            <h2 class="text-slate-900 dark:text-white text-3xl font-bold leading-tight tracking-[-0.015em]">Planes de
+                Mantenimiento</h2>
+            <p class="text-slate-600 dark:text-text-secondary">Elige el plan que mejor se adapte a las necesidades de tu
+                motocicleta.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+            <!-- Basic Card -->
+            <div
+                class="flex flex-col gap-6 rounded-xl border border-solid border-slate-200 dark:border-border-dark bg-white dark:bg-card-dark p-6 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <div class="flex flex-col gap-2">
+                    <h3 class="text-slate-900 dark:text-white text-xl font-bold">Servicio Básico</h3>
+                    <p class="text-slate-500 dark:text-text-secondary text-sm">Ideal para chequeos rutinarios rápidos.
+                    </p>
+                    <div class="flex items-baseline gap-1 mt-2 text-slate-900 dark:text-white">
+                        <span class="text-4xl font-black tracking-tighter">$40</span>
+                        <span class="text-base font-medium opacity-80">/visita</span>
+                    </div>
+                </div>
+                <button routerLink="/dashboard"
+                    class="w-full h-12 rounded-lg bg-slate-100 dark:bg-[#292e38] hover:bg-slate-200 dark:hover:bg-[#363b47] text-slate-900 dark:text-white text-sm font-bold transition-colors">
+                    Solicitar Turno
+                </button>
+                <div class="flex flex-col gap-3 pt-2">
+                    <div class="flex gap-3 text-slate-700 dark:text-gray-300 text-sm">
+                        <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>Cambio de aceite</span>
+                    </div>
+                    <div class="flex gap-3 text-slate-700 dark:text-gray-300 text-sm">
+                        <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>Tensado de cadena</span>
+                    </div>
+                    <div class="flex gap-3 text-slate-700 dark:text-gray-300 text-sm">
+                        <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>Chequeo de presión de neumáticos</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medium Card (Highlighted) -->
+            <div
+                class="flex flex-col gap-6 rounded-xl border-2 border-primary bg-white dark:bg-card-dark p-6 shadow-2xl hover:shadow-primary/20 hover:-translate-y-1 transition-all duration-300 relative transform md:scale-105 z-10">
+                <div
+                    class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                    Recomendado
+                </div>
+                <div class="flex flex-col gap-2">
+                    <h3 class="text-slate-900 dark:text-white text-xl font-bold text-primary">Servicio Medio</h3>
+                    <p class="text-slate-500 dark:text-text-secondary text-sm">Mantenimiento anual completo.</p>
+                    <div class="flex items-baseline gap-1 mt-2 text-slate-900 dark:text-white">
+                        <span class="text-5xl font-black tracking-tighter">$90</span>
+                        <span class="text-base font-medium opacity-80">/visita</span>
+                    </div>
+                </div>
+                <button routerLink="/dashboard"
+                    class="w-full h-12 rounded-lg bg-primary hover:bg-blue-600 text-white text-base font-bold transition-colors shadow-lg shadow-primary/25">
+                    Solicitar Turno
+                </button>
+                <div class="flex flex-col gap-3 pt-2">
+                    <div class="flex gap-3 text-slate-700 dark:text-gray-300 text-sm font-medium">
+                        <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>Incluye todo del Básico</span>
+                    </div>
+                    <div class="flex gap-3 text-slate-700 dark:text-gray-300 text-sm">
+                        <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>Cambio de filtro de aire</span>
+                    </div>
+                    <div class="flex gap-3 text-slate-700 dark:text-gray-300 text-sm">
+                        <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>Reemplazo de bujías</span>
+                    </div>
+                    <div class="flex gap-3 text-slate-700 dark:text-gray-300 text-sm">
+                        <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>Relleno de líquido de frenos</span>
+                    </div>
+                    <div class="flex gap-3 text-slate-700 dark:text-gray-300 text-sm">
+                        <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>Lavado exterior detallado</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Premium Card -->
+            <div
+                class="flex flex-col gap-6 rounded-xl border border-solid border-slate-200 dark:border-border-dark bg-white dark:bg-card-dark p-6 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <div class="flex flex-col gap-2">
+                    <h3 class="text-slate-900 dark:text-white text-xl font-bold">Servicio Premium</h3>
+                    <p class="text-slate-500 dark:text-text-secondary text-sm">Reacondicionamiento total.</p>
+                    <div class="flex items-baseline gap-1 mt-2 text-slate-900 dark:text-white">
+                        <span class="text-4xl font-black tracking-tighter">$180</span>
+                        <span class="text-base font-medium opacity-80">/visita</span>
+                    </div>
+                </div>
+                <button routerLink="/dashboard"
+                    class="w-full h-12 rounded-lg bg-slate-100 dark:bg-[#292e38] hover:bg-slate-200 dark:hover:bg-[#363b47] text-slate-900 dark:text-white text-sm font-bold transition-colors">
+                    Solicitar Turno
+                </button>
+                <div class="flex flex-col gap-3 pt-2">
+                    <div class="flex gap-3 text-slate-700 dark:text-gray-300 text-sm font-medium">
+                        <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>Incluye todo del Medio</span>
+                    </div>
+                    <div class="flex gap-3 text-slate-700 dark:text-gray-300 text-sm">
+                        <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>Ajuste de válvulas</span>
+                    </div>
+                    <div class="flex gap-3 text-slate-700 dark:text-gray-300 text-sm">
+                        <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>Lavado de sistema refrigerante</span>
+                    </div>
+                    <div class="flex gap-3 text-slate-700 dark:text-gray-300 text-sm">
+                        <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                        <span>Diagnóstico eléctrico completo</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="w-full bg-slate-50 dark:bg-[#161a23] py-12 md:py-16">
+        <div class="max-w-[800px] mx-auto px-4 md:px-10">
+            <div class="text-center mb-10">
+                <h2
+                    class="text-slate-900 dark:text-white text-2xl md:text-3xl font-bold leading-tight tracking-[-0.015em] mb-2">
+                    Preguntas Frecuentes</h2>
+                <p class="text-slate-600 dark:text-text-secondary">Resolvemos tus dudas antes de reservar.</p>
+            </div>
+            <div class="flex flex-col gap-4">
+                <details
+                    class="flex flex-col rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-card-dark px-5 py-3 group shadow-sm"
+                    open>
+                    <summary class="flex cursor-pointer items-center justify-between gap-6 py-2 list-none outline-none">
+                        <p class="text-slate-900 dark:text-white text-base font-bold">¿Cuánto tiempo demora el servicio
+                            medio?</p>
+                        <span
+                            class="material-symbols-outlined text-slate-500 dark:text-gray-400 group-open:rotate-180 transition-transform duration-200">expand_more</span>
+                    </summary>
+                    <div class="text-slate-600 dark:text-text-secondary text-sm font-normal leading-relaxed pt-2 pb-2">
+                        El servicio medio generalmente toma entre 3 y 4 horas, dependiendo del modelo de la motocicleta
+                        y la disponibilidad de repuestos específicos si fuesen necesarios.
+                    </div>
+                </details>
+                <details
+                    class="flex flex-col rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-card-dark px-5 py-3 group shadow-sm">
+                    <summary class="flex cursor-pointer items-center justify-between gap-6 py-2 list-none outline-none">
+                        <p class="text-slate-900 dark:text-white text-base font-bold">¿Utilizan repuestos originales?
+                        </p>
+                        <span
+                            class="material-symbols-outlined text-slate-500 dark:text-gray-400 group-open:rotate-180 transition-transform duration-200">expand_more</span>
+                    </summary>
+                    <div class="text-slate-600 dark:text-text-secondary text-sm font-normal leading-relaxed pt-2 pb-2">
+                        Sí, siempre priorizamos repuestos originales del fabricante. Si prefieres alternativas de otras
+                        marcas de calidad, podemos discutirlo antes de realizar el trabajo.
+                    </div>
+                </details>
+                <details
+                    class="flex flex-col rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-card-dark px-5 py-3 group shadow-sm">
+                    <summary class="flex cursor-pointer items-center justify-between gap-6 py-2 list-none outline-none">
+                        <p class="text-slate-900 dark:text-white text-base font-bold">¿Necesito reservar con mucha
+                            anticipación?</p>
+                        <span
+                            class="material-symbols-outlined text-slate-500 dark:text-gray-400 group-open:rotate-180 transition-transform duration-200">expand_more</span>
+                    </summary>
+                    <div class="text-slate-600 dark:text-text-secondary text-sm font-normal leading-relaxed pt-2 pb-2">
+                        Recomendamos reservar con al menos 48 horas de antelación para asegurar tu turno, especialmente
+                        para los servicios Medio y Premium que requieren más tiempo de taller.
+                    </div>
+                </details>
+                <details
+                    class="flex flex-col rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-card-dark px-5 py-3 group shadow-sm">
+                    <summary class="flex cursor-pointer items-center justify-between gap-6 py-2 list-none outline-none">
+                        <p class="text-slate-900 dark:text-white text-base font-bold">¿Ofrecen garantía?</p>
+                        <span
+                            class="material-symbols-outlined text-slate-500 dark:text-gray-400 group-open:rotate-180 transition-transform duration-200">expand_more</span>
+                    </summary>
+                    <div class="text-slate-600 dark:text-text-secondary text-sm font-normal leading-relaxed pt-2 pb-2">
+                        Todos nuestros servicios cuentan con una garantía de 3 meses sobre la mano de obra y la garantía
+                        oficial correspondiente a los repuestos instalados.
+                    </div>
+                </details>
+            </div>
+        </div>
+    </div>
+</main>

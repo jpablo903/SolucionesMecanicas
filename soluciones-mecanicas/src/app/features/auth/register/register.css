@@ -1,0 +1,20 @@
+/* Custom scrollbar for cleaner look */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #111318;
+}
+::-webkit-scrollbar-thumb {
+    background: #292e38;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #3c4453;
+}
+
+.glass-panel {
+    background: rgba(17, 19, 24, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
