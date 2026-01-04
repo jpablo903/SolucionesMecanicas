@@ -12,6 +12,7 @@ import { AuthService } from '../../auth.service';
 export class Navbar implements OnInit {
   isLoggedIn = false;
   userEmail = '';
+  isMobileMenuOpen = false;
 
   constructor(private authService: AuthService) { }
 
@@ -23,6 +24,10 @@ export class Navbar implements OnInit {
     this.authService.currentUserEmail$.subscribe((email: string) => {
       this.userEmail = email;
     });
+  }
+
+  toggleMobileMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
 
   logout() {
