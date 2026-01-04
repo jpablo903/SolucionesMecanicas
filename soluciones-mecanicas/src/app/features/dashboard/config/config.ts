@@ -62,6 +62,11 @@ export class Config implements OnInit {
             return;
         }
 
+        if (this.currentUser.active === false) {
+            alert('Tu cuenta está restringida. No puedes modificar tu perfil.');
+            return;
+        }
+
         this.loading = true;
         this.errorMessage = null;
         this.successMessage = null;
@@ -89,6 +94,11 @@ export class Config implements OnInit {
     changePassword() {
         if (this.passwordForm.invalid || !this.currentUser) {
             this.passwordForm.markAllAsTouched();
+            return;
+        }
+
+        if (this.currentUser.active === false) {
+            alert('Tu cuenta está restringida. No puedes cambiar tu contraseña.');
             return;
         }
 

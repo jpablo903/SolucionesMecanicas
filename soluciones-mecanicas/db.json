@@ -7,7 +7,9 @@
       "firstName": "Oscar",
       "lastName": "Insaurralde",
       "phone": "1166336633",
-      "createdAt": "2026-01-04T13:15:45.109Z"
+      "createdAt": "2026-01-04T13:15:45.109Z",
+      "role": "client",
+      "active": true
     },
     {
       "id": "a85e",
@@ -16,7 +18,20 @@
       "firstName": "Nuevo",
       "lastName": "Usuario",
       "phone": "",
-      "createdAt": "2026-01-04T13:59:52.999Z"
+      "createdAt": "2026-01-04T13:59:52.999Z",
+      "role": "client",
+      "active": true
+    },
+    {
+      "id": "admin1",
+      "email": "admin@soluciones.com",
+      "password": "admin123",
+      "firstName": "Admin",
+      "lastName": "System",
+      "phone": "",
+      "createdAt": "2026-01-04T12:00:00.000Z",
+      "role": "admin",
+      "active": true
     }
   ],
   "motorcycles": [
@@ -28,7 +43,8 @@
       "version": "ED",
       "year": 2018,
       "licensePlate": "LNR995",
-      "displayName": "Yamaha YBR 125 (2018) - LNR995"
+      "displayName": "Yamaha YBR 125 (2018) - LNR995",
+      "active": true
     },
     {
       "id": "19e5",
@@ -38,7 +54,8 @@
       "version": "",
       "year": 2023,
       "licensePlate": "TEST123",
-      "displayName": "Honda CB500F (2023) - TEST123"
+      "displayName": "Honda CB500F (2023) - TEST123",
+      "active": true
     },
     {
       "id": "f033",
@@ -48,9 +65,347 @@
       "version": "Sport",
       "year": 2020,
       "licensePlate": "AP568AS",
-      "displayName": "BMW F1200 (2020) - AP568AS"
+      "displayName": "BMW F1200 (2020) - AP568AS",
+      "active": true
     }
   ],
-  "appointments": [],
-  "serviceHistory": []
+  "appointments": [
+    {
+      "id": "2d5b",
+      "userId": "b973",
+      "motorcycle": {
+        "id": "f033",
+        "userId": "b973",
+        "brand": "BMW",
+        "model": "F1200",
+        "version": "Sport",
+        "year": 2020,
+        "licensePlate": "AP568AS",
+        "displayName": "BMW F1200 (2020) - AP568AS",
+        "active": true
+      },
+      "service": {
+        "id": "1",
+        "name": "Service Oficial",
+        "description": "Mantenimiento preventivo según kilometraje.",
+        "price": 45000,
+        "duration": "~2 hs",
+        "icon": "build"
+      },
+      "date": "2026-01-06T03:00:00.000Z",
+      "timeSlot": "15:00",
+      "totalPrice": 45000,
+      "status": "cancelled",
+      "createdAt": "2026-01-04T16:58:46.835Z"
+    },
+    {
+      "id": "55ae",
+      "userId": "b973",
+      "motorcycle": {
+        "id": "fe9f",
+        "userId": "b973",
+        "brand": "Yamaha",
+        "model": "YBR 125",
+        "version": "ED",
+        "year": 2018,
+        "licensePlate": "LNR995",
+        "displayName": "Yamaha YBR 125 (2018) - LNR995",
+        "active": true
+      },
+      "service": {
+        "id": "4",
+        "name": "Revisión General",
+        "description": "Chequeo de seguridad pre-viaje.",
+        "price": 15000,
+        "duration": "~1 h",
+        "icon": "health_and_safety"
+      },
+      "date": "2026-01-04T03:00:00.000Z",
+      "timeSlot": "16:00",
+      "totalPrice": 15000,
+      "status": "cancelled",
+      "createdAt": "2026-01-04T17:00:46.056Z"
+    },
+    {
+      "id": "3024",
+      "userId": "b973",
+      "motorcycle": {
+        "id": "fe9f",
+        "userId": "b973",
+        "brand": "Yamaha",
+        "model": "YBR 125",
+        "version": "ED",
+        "year": 2018,
+        "licensePlate": "LNR995",
+        "displayName": "Yamaha YBR 125 (2018) - LNR995",
+        "active": true
+      },
+      "service": {
+        "id": "3",
+        "name": "Neumáticos",
+        "description": "Cambio o reparación de cubiertas.",
+        "price": 0,
+        "duration": "Variable",
+        "icon": "tire_repair"
+      },
+      "date": "2026-01-05T03:00:00.000Z",
+      "timeSlot": "11:00",
+      "totalPrice": 0,
+      "status": "cancelled",
+      "createdAt": "2026-01-04T17:02:29.402Z"
+    },
+    {
+      "id": "b61a",
+      "userId": "b973",
+      "motorcycle": {
+        "id": "fe9f",
+        "userId": "b973",
+        "brand": "Yamaha",
+        "model": "YBR 125",
+        "version": "ED",
+        "year": 2018,
+        "licensePlate": "LNR995",
+        "displayName": "Yamaha YBR 125 (2018) - LNR995",
+        "active": true
+      },
+      "service": {
+        "id": "1",
+        "name": "Service Oficial",
+        "description": "Mantenimiento preventivo según kilometraje.",
+        "price": 45000,
+        "duration": "~2 hs",
+        "icon": "build"
+      },
+      "date": "2026-01-04T03:00:00.000Z",
+      "timeSlot": "15:00",
+      "totalPrice": 45000,
+      "status": "cancelled",
+      "createdAt": "2026-01-04T17:25:04.206Z",
+      "cancelledBy": "admin"
+    },
+    {
+      "id": "846d",
+      "userId": "a85e",
+      "motorcycle": {
+        "id": "19e5",
+        "userId": "a85e",
+        "brand": "Honda",
+        "model": "CB500F",
+        "version": "",
+        "year": 2023,
+        "licensePlate": "TEST123",
+        "displayName": "Honda CB500F (2023) - TEST123",
+        "active": true
+      },
+      "service": {
+        "id": "1",
+        "name": "Service Oficial",
+        "description": "Mantenimiento preventivo según kilometraje.",
+        "price": 45000,
+        "duration": "~2 hs",
+        "icon": "build"
+      },
+      "date": "2026-01-04T03:00:00.000Z",
+      "timeSlot": "16:00",
+      "totalPrice": 45000,
+      "status": "completed",
+      "createdAt": "2026-01-04T17:25:56.909Z"
+    },
+    {
+      "id": "49d8",
+      "userId": "b973",
+      "motorcycle": {
+        "id": "fe9f",
+        "userId": "b973",
+        "brand": "Yamaha",
+        "model": "YBR 125",
+        "version": "ED",
+        "year": 2018,
+        "licensePlate": "LNR995",
+        "displayName": "Yamaha YBR 125 (2018) - LNR995",
+        "active": true
+      },
+      "service": {
+        "id": "1",
+        "name": "Service Oficial",
+        "description": "Mantenimiento preventivo según kilometraje.",
+        "price": 45000,
+        "duration": "~2 hs",
+        "icon": "build"
+      },
+      "date": "2026-01-04T03:00:00.000Z",
+      "timeSlot": "17:00",
+      "totalPrice": 45000,
+      "status": "cancelled",
+      "createdAt": "2026-01-04T17:31:32.596Z",
+      "cancelledBy": "admin"
+    },
+    {
+      "id": "9180",
+      "userId": "b973",
+      "motorcycle": {
+        "id": "fe9f",
+        "userId": "b973",
+        "brand": "Yamaha",
+        "model": "YBR 125",
+        "version": "ED",
+        "year": 2018,
+        "licensePlate": "LNR995",
+        "displayName": "Yamaha YBR 125 (2018) - LNR995",
+        "active": true
+      },
+      "service": {
+        "id": "3",
+        "name": "Neumáticos",
+        "description": "Cambio o reparación de cubiertas.",
+        "price": 0,
+        "duration": "Variable",
+        "icon": "tire_repair"
+      },
+      "date": "2026-01-04T03:00:00.000Z",
+      "timeSlot": "17:00",
+      "totalPrice": 0,
+      "status": "completed",
+      "createdAt": "2026-01-04T17:35:59.667Z"
+    },
+    {
+      "id": "ec9a",
+      "userId": "b973",
+      "motorcycle": {
+        "id": "f033",
+        "userId": "b973",
+        "brand": "BMW",
+        "model": "F1200",
+        "version": "Sport",
+        "year": 2020,
+        "licensePlate": "AP568AS",
+        "displayName": "BMW F1200 (2020) - AP568AS",
+        "active": true
+      },
+      "service": {
+        "id": "4",
+        "name": "Revisión General",
+        "description": "Chequeo de seguridad pre-viaje.",
+        "price": 15000,
+        "duration": "~1 h",
+        "icon": "health_and_safety"
+      },
+      "date": "2026-01-04T03:00:00.000Z",
+      "timeSlot": "18:00",
+      "totalPrice": 15000,
+      "status": "pending",
+      "createdAt": "2026-01-04T17:36:10.987Z"
+    },
+    {
+      "id": "0591",
+      "userId": "a85e",
+      "motorcycle": {
+        "id": "19e5",
+        "userId": "a85e",
+        "brand": "Honda",
+        "model": "CB500F",
+        "version": "",
+        "year": 2023,
+        "licensePlate": "TEST123",
+        "displayName": "Honda CB500F (2023) - TEST123",
+        "active": true
+      },
+      "service": {
+        "id": "2",
+        "name": "Cambio de Aceite",
+        "description": "Cambio de aceite y filtro + revisión básica.",
+        "price": 22000,
+        "duration": "~45 min",
+        "icon": "oil_barrel"
+      },
+      "date": "2026-01-04T03:00:00.000Z",
+      "timeSlot": "19:00",
+      "totalPrice": 22000,
+      "status": "pending",
+      "createdAt": "2026-01-04T17:36:37.461Z"
+    },
+    {
+      "id": "398b",
+      "userId": "a85e",
+      "motorcycle": {
+        "id": "19e5",
+        "userId": "a85e",
+        "brand": "Honda",
+        "model": "CB500F",
+        "version": "",
+        "year": 2023,
+        "licensePlate": "TEST123",
+        "displayName": "Honda CB500F (2023) - TEST123",
+        "active": true
+      },
+      "service": {
+        "id": "2",
+        "name": "Cambio de Aceite",
+        "description": "Cambio de aceite y filtro + revisión básica.",
+        "price": 22000,
+        "duration": "~45 min",
+        "icon": "oil_barrel"
+      },
+      "date": "2026-01-06T03:00:00.000Z",
+      "timeSlot": "07:00",
+      "totalPrice": 22000,
+      "status": "pending",
+      "createdAt": "2026-01-04T17:37:36.810Z"
+    }
+  ],
+  "serviceHistory": [],
+  "scheduleConfig": {
+    "blockedDays": [
+      "2026-01-05"
+    ],
+    "blockedHours": [],
+    "specificBlocks": [
+      {
+        "date": "2026-01-06",
+        "hours": [
+          "1200",
+          "1300",
+          "1400"
+        ]
+      },
+      {
+        "date": "2026-01-07",
+        "hours": [
+          "2100",
+          "2000",
+          "1900"
+        ]
+      },
+      {
+        "date": "2026-01-08",
+        "hours": [
+          "1800",
+          "1700",
+          "1600",
+          "1900",
+          "2000",
+          "2100",
+          "0700",
+          "0800"
+        ]
+      },
+      {
+        "date": "2026-01-05",
+        "hours": [
+          "2100",
+          "2000",
+          "1900",
+          "1800",
+          "1700",
+          "1600"
+        ]
+      },
+      {
+        "date": "2026-01-04",
+        "hours": [
+          "1500"
+        ]
+      }
+    ]
+  }
 }

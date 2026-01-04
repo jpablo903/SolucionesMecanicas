@@ -47,7 +47,9 @@ export class AuthService {
             firstName: 'Nuevo',
             lastName: 'Usuario',
             phone: '',
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            role: 'client',
+            active: true
         };
 
         return this.http.post<User>(this.apiUrl, newUser).pipe(
@@ -66,7 +68,13 @@ export class AuthService {
         return this.http.get<User[]>(`${this.apiUrl}?email=${email}&password=${password}`).pipe(
             map(users => {
                 if (users.length > 0) {
-                    return users[0];
+                    const user = users[0];
+                    if (!user.active && user.role !== 'admin') {
+                        // Optional: Throw error or allow login with restricted access?
+                        // Requirement: "si el administrador pone en off al cliente, este cliente, podra entrar a su dashboard pero no podra hacer nada mas que mirar"
+                        // So we continue login, but UI handles restriction.
+                    }
+                    return user;
                 } else {
                     throw new Error('Invalid credentials');
                 }
@@ -118,5 +126,28 @@ export class AuthService {
      */
     getCurrentUserId(): string | null {
         return localStorage.getItem('userId');
+    }
+
+    /**
+     * Check if current user is admin
+     */
+    isAdmin(): boolean {
+        const user = this.currentUserSubject.getValue();
+        return user?.role === 'admin';
+    }
+
+    /**
+     * Get all users (Admin only)
+     */
+    getAllUsers(): Observable<User[]> {
+        // In a real app, you'd filter by role=client ideally, but we can filter on client side
+        return this.http.get<User[]>(this.apiUrl);
+    }
+
+    /**
+     * Update user active status (Admin only)
+     */
+    updateUserStatus(userId: string, active: boolean): Observable<User> {
+        return this.http.patch<User>(`${this.apiUrl}/${userId}`, { active });
     }
 }

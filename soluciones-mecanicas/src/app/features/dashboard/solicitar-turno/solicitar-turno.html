@@ -140,13 +140,21 @@
                                     <h4 class="text-white font-medium text-sm mb-0.5">Horarios Disponibles</h4>
                                     <p class="text-text-secondary text-xs">{{ getSelectedDateText() }}</p>
                                 </div>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <button *ngFor="let slot of timeSlots" (click)="selectTimeSlot(slot)"
+                                <div class="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto">
+                                    <button *ngFor="let slot of availableTimeSlots" (click)="selectTimeSlot(slot)"
                                         [disabled]="!slot.available"
-                                        [class]="isTimeSelected(slot.time) ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' : slot.available ? 'border-border-dark text-text-secondary hover:border-white hover:text-white' : 'border-border-dark text-text-secondary/50 line-through cursor-not-allowed bg-background-dark/50'"
-                                        class="py-1.5 px-3 rounded-lg border transition-all text-xs font-medium">
+                                        [class]="isTimeSelected(slot.time) ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' : slot.available ? 'border-border-dark text-text-secondary hover:border-white hover:text-white' : 'border-border-dark text-text-secondary/50 cursor-not-allowed bg-background-dark/50 relative overflow-hidden'"
+                                        class="py-1.5 px-3 rounded-lg border transition-all text-xs font-medium relative group">
                                         {{ slot.time }}
+                                        <span *ngIf="!slot.available"
+                                            class="absolute inset-0 flex items-center justify-center bg-gray-900/60">
+                                            <span class="material-symbols-outlined text-gray-500 text-sm">block</span>
+                                        </span>
                                     </button>
+                                </div>
+                                <div *ngIf="availableTimeSlots.length === 0"
+                                    class="text-xs text-text-secondary text-center mt-4">
+                                    Selecciona una fecha ver horarios.
                                 </div>
                             </div>
                         </div>

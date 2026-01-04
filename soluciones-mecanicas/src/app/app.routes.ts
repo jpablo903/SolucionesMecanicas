@@ -12,6 +12,7 @@ import { Moto } from './features/dashboard/moto/moto';
 import { Historial } from './features/dashboard/historial/historial';
 import { Config } from './features/dashboard/config/config';
 import { authGuard } from './auth.guard';
+import { adminGuard } from './admin.guard';
 
 export const routes: Routes = [
     { path: '', component: Home },
@@ -32,6 +33,11 @@ export const routes: Routes = [
             { path: 'historial', component: Historial },
             { path: 'config', component: Config }
         ]
+    },
+    {
+        path: 'admin',
+        canActivate: [authGuard, adminGuard], // authGuard ensures login, adminGuard checks role
+        loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES)
     },
     { path: '**', redirectTo: '' }
 ];

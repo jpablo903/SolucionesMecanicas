@@ -52,8 +52,12 @@ export class Login implements OnInit {
     this.authService.login(email, password).subscribe({
       next: (user) => {
         this.loading = false;
-        // Redirect to dashboard
-        this.router.navigate(['/dashboard']);
+
+        if (user.role === 'admin') {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/dashboard']);
+        }
       },
       error: (error) => {
         this.loading = false;

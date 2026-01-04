@@ -31,6 +31,10 @@ export class Navbar implements OnInit {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
 
+  get dashboardLink(): string {
+    return this.currentUser?.role === 'admin' ? '/admin' : '/dashboard';
+  }
+
   logout() {
     this.authService.logout();
     window.location.href = '/';

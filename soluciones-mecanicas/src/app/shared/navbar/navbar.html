@@ -39,7 +39,7 @@
                 <!-- User info - shown when logged in -->
                 <!-- User info - shown when logged in -->
                 <div *ngIf="isLoggedIn" class="flex items-center gap-2">
-                    <a routerLink="/dashboard"
+                    <a [routerLink]="dashboardLink"
                         class="hidden md:flex items-center gap-2 px-3 h-9 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer group">
                         <span
                             class="material-symbols-outlined text-primary group-hover:text-blue-600 transition-colors text-[18px]">account_circle</span>
@@ -93,7 +93,8 @@
                     <!-- User info - shown when logged in -->
                     <div *ngIf="isLoggedIn"
                         class="flex items-center justify-between px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800">
-                        <a routerLink="/dashboard" (click)="toggleMobileMenu()" class="flex items-center gap-2 flex-1">
+                        <a [routerLink]="dashboardLink" (click)="toggleMobileMenu()"
+                            class="flex items-center gap-2 flex-1">
                             <span class="material-symbols-outlined text-primary text-[18px]">account_circle</span>
                             <span class="text-slate-900 dark:text-white text-sm font-medium">{{ currentUser?.email
                                 }}</span>

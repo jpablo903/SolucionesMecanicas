@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../auth.service';
 import { User, Appointment } from '../dashboard.models';
 
@@ -14,17 +15,23 @@ export class Turnos implements OnInit {
     currentUser: User | null = null;
     appointments: Appointment[] = [];
     successMessage: string | null = null;
+    loading = true;
 
     constructor(
         private authService: AuthService,
-        private router: Router
+        private router: Router,
+        private http: HttpClient,
+        private cdr: ChangeDetectorRef
     ) {
         // Check for success message from navigation state
         const navigation = this.router.getCurrentNavigation();
         if (navigation?.extras.state?.['message']) {
             this.successMessage = navigation.extras.state['message'];
             // Clear message after 5 seconds
-            setTimeout(() => this.successMessage = null, 5000);
+            setTimeout(() => {
+                this.successMessage = null;
+                this.cdr.detectChanges();
+            }, 5000);
         }
     }
 
@@ -34,30 +41,51 @@ export class Turnos implements OnInit {
             this.currentUser = user;
             if (user) {
                 this.loadAppointments();
+            } else {
+                this.loading = false;
             }
         });
     }
 
     loadAppointments() {
-        // Load appointments from localStorage (filtered by userId)
-        const allAppointments: Appointment[] = JSON.parse(localStorage.getItem('appointments') || '[]');
-        this.appointments = allAppointments.filter(apt => apt.userId === this.currentUser?.id);
+        if (!this.currentUser) return;
+        this.loading = true;
+        this.http.get<Appointment[]>(`http://localhost:3000/appointments?userId=${this.currentUser.id}`).subscribe({
+            next: (apts) => {
+                this.appointments = apts
+                    .filter(a => a.status === 'pending' || a.status === 'confirmed')
+                    .sort((a, b) => {
+                        return new Date(a.date).getTime() - new Date(b.date).getTime();
+                    });
+                this.loading = false;
+                this.cdr.detectChanges();
+            },
+            error: (err) => {
+                console.error('Error loading appointments', err);
+                this.loading = false;
+                this.cdr.detectChanges();
+            }
+        });
     }
 
-    cancelAppointment(index: number) {
+    cancelAppointment(appointment: Appointment) {
         if (confirm('¿Estás seguro de que deseas cancelar este turno?')) {
-            this.appointments[index].status = 'cancelled';
-            // Update localStorage
-            const allAppointments: Appointment[] = JSON.parse(localStorage.getItem('appointments') || '[]');
-            const globalIndex = allAppointments.findIndex(apt =>
-                apt.userId === this.currentUser?.id &&
-                apt.date === this.appointments[index].date &&
-                apt.timeSlot === this.appointments[index].timeSlot
-            );
-            if (globalIndex !== -1) {
-                allAppointments[globalIndex].status = 'cancelled';
-                localStorage.setItem('appointments', JSON.stringify(allAppointments));
-            }
+            // Optimistic update
+            const originalStatus = appointment.status;
+            appointment.status = 'cancelled';
+
+            this.http.patch(`http://localhost:3000/appointments/${appointment.id}`, { status: 'cancelled', cancelledBy: 'client' }).subscribe({
+                next: () => {
+                    this.cdr.detectChanges();
+                },
+                error: (err) => {
+                    console.error('Error cancelling', err);
+                    // Revert
+                    appointment.status = originalStatus;
+                    alert('Error al cancelar el turno');
+                    this.cdr.detectChanges();
+                }
+            });
         }
     }
 
@@ -70,16 +98,18 @@ export class Turnos implements OnInit {
         }
     }
 
-    getStatusText(status: string): string {
-        switch (status) {
+    getStatusText(appointment: Appointment): string {
+        switch (appointment.status) {
             case 'confirmed': return 'Confirmado';
             case 'pending': return 'Pendiente';
-            case 'cancelled': return 'Cancelado';
-            default: return status;
+            case 'cancelled':
+                return appointment.cancelledBy === 'admin' ? 'Cancelado por Administración' : 'Cancelado';
+            case 'completed': return 'Realizado';
+            default: return appointment.status;
         }
     }
 
-    formatDate(date: Date): string {
+    formatDate(date: Date | string): string {
         return new Date(date).toLocaleDateString('es-AR', {
             weekday: 'short',
             year: 'numeric',

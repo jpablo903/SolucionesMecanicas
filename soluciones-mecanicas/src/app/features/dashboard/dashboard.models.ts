@@ -7,6 +7,7 @@ export interface Motorcycle {
     year: number;
     licensePlate: string;
     displayName: string;
+    active?: boolean;
 }
 
 export interface Service {
@@ -23,15 +24,23 @@ export interface TimeSlot {
     available: boolean;
 }
 
+export interface ScheduleConfig {
+    id?: string; // usually 'default' or similar
+    blockedDays: string[]; // ISO date strings 'YYYY-MM-DD'
+    blockedHours: string[]; // '0700', '0800', etc. (Global)
+    specificBlocks: { date: string, hours: string[] }[]; // Specific date exceptions
+}
+
 export interface Appointment {
     id?: string;
     userId: string;
     motorcycle: Motorcycle;
     service: Service;
     date: Date;
-    timeSlot: string;
+    timeSlot: string; // '0700', '1500' format
     totalPrice: number;
-    status: 'pending' | 'confirmed' | 'cancelled';
+    status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+    cancelledBy?: 'admin' | 'client'; // To track who cancelled
     createdAt?: string;
 }
 
@@ -43,6 +52,8 @@ export interface User {
     lastName: string;
     phone: string;
     createdAt: string;
+    role: 'admin' | 'client';
+    active: boolean;
 }
 
 export interface ServiceHistory {

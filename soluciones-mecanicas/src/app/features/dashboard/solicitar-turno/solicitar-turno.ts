@@ -3,8 +3,9 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Motorcycle, Service, TimeSlot, Appointment } from '../dashboard.models';
+import { Motorcycle, Service, TimeSlot, Appointment, ScheduleConfig } from '../dashboard.models';
 import { AuthService } from '../../../auth.service';
+import { AdminService } from '../../admin/admin.service'; // Reusing service for config fetch
 
 @Component({
   selector: 'app-solicitar-turno',
@@ -23,6 +24,10 @@ export class SolicitarTurno implements OnInit {
     { id: '4', name: 'Revisión General', description: 'Chequeo de seguridad pre-viaje.', price: 15000, duration: '~1 h', icon: 'health_and_safety' }
   ];
 
+  // Config State
+  scheduleConfig: ScheduleConfig = { blockedDays: [], blockedHours: [], specificBlocks: [] };
+  takenAppointments: Appointment[] = [];
+
   // Calendar data
   currentMonth: Date = new Date();
   today: Date = new Date();
@@ -37,23 +42,19 @@ export class SolicitarTurno implements OnInit {
   selectedDate: number | null = null;
   selectedTime: string | null = null;
 
-  // Time slots
-  timeSlots: TimeSlot[] = [
-    { time: '08:00 AM', available: true },
-    { time: '09:00 AM', available: false },
-    { time: '10:00 AM', available: true },
-    { time: '11:30 AM', available: true },
-    { time: '14:00 PM', available: true },
-    { time: '15:30 PM', available: false }
-  ];
+  // Time slots (base)
+  availableTimeSlots: TimeSlot[] = [];
 
   // UI State
   confirmationMessage: string | null = null;
+  currentUser: any = null;
+  loadingConfig = true;
 
   constructor(
     private router: Router,
     private http: HttpClient,
     private authService: AuthService,
+    private adminService: AdminService, // Use AdminService to get config
     private cdr: ChangeDetectorRef
   ) {
     // Reset today's time to midnight for accurate comparison
@@ -61,9 +62,37 @@ export class SolicitarTurno implements OnInit {
   }
 
   ngOnInit() {
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
     this.loadMotorcycles();
+    this.loadConfig();
     this.selectedService = this.services[0];
     this.updateCalendar();
+  }
+
+  loadConfig() {
+    this.loadingConfig = true;
+    this.adminService.getScheduleConfig().subscribe(config => {
+      this.scheduleConfig = config;
+      this.loadingConfig = false;
+      this.cdr.detectChanges();
+      // After config loads, we might need to re-validate selected date/time if user picked one
+    });
+  }
+
+  loadAppointmentsForDate(date: Date) {
+    const dateStr = this.formatDate(date);
+    // Fetch appointments for this date
+    this.http.get<Appointment[]>(`http://localhost:3000/appointments?date_like=${dateStr}&status_ne=cancelled`).subscribe(apts => {
+      // Strict client-side filtering to prevent cross-day blocking issues
+      this.takenAppointments = apts.filter(a => {
+        const apptDateStr = this.formatDate(new Date(a.date));
+        return apptDateStr === dateStr;
+      });
+      this.generateTimeSlots(date);
+      this.cdr.detectChanges();
+    });
   }
 
   loadMotorcycles() {
@@ -95,41 +124,27 @@ export class SolicitarTurno implements OnInit {
   updateCalendar() {
     const year = this.currentMonth.getFullYear();
     const month = this.currentMonth.getMonth();
-
-    // Get month name in Spanish
-    const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
     this.monthName = `${months[month]} ${year}`;
-
-    // Get the first day of the month (0 = Sunday, 1 = Monday, etc.)
     const firstDay = new Date(year, month, 1).getDay();
-
-    // Get the last day of the month
     const lastDay = new Date(year, month + 1, 0).getDate();
-
-    // Create empty cells array for padding (before month starts)
     this.emptyDays = Array(firstDay).fill(0);
-
-    // Generate calendar days
     this.calendarDays = Array.from({ length: lastDay }, (_, i) => i + 1);
   }
 
   canGoPreviousMonth(): boolean {
     const prevMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() - 1, 1);
     const today = new Date();
-    today.setDate(1); // Set to first day for month comparison
+    today.setDate(1);
     return prevMonth >= today;
   }
 
   selectMotorcycle(event: any) {
     const id = event.target.value;
-
-    // Check if user selected "add new motorcycle"
     if (id === 'add') {
       this.router.navigate(['/dashboard/moto']);
       return;
     }
-
     this.selectedMotorcycleId = id;
     this.selectedMotorcycle = this.motorcycles.find(m => m.id === id) || null;
   }
@@ -157,6 +172,9 @@ export class SolicitarTurno implements OnInit {
   selectDate(day: number) {
     if (!this.isDayDisabled(day)) {
       this.selectedDate = day;
+      const date = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth(), day);
+      this.selectedTime = null; // Reset time
+      this.loadAppointmentsForDate(date);
     }
   }
 
@@ -164,21 +182,70 @@ export class SolicitarTurno implements OnInit {
     return this.selectedDate === day;
   }
 
+  formatDate(d: Date): string {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const dayStr = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${dayStr}`;
+  }
+
   isDayDisabled(day: number): boolean {
     const dateToCheck = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth(), day);
     dateToCheck.setHours(0, 0, 0, 0);
-    return dateToCheck < this.today;
+
+    // Past date check
+    if (dateToCheck < this.today) return true;
+
+    // Config block check
+    const dateStr = this.formatDate(dateToCheck);
+    if (this.scheduleConfig.blockedDays.includes(dateStr)) return true;
+
+    return false;
+  }
+
+  generateTimeSlots(date: Date) {
+    const dateStr = this.formatDate(date);
+    // Base hours 07:00 to 21:00
+    const hours = Array.from({ length: 15 }, (_, i) => {
+      const h = i + 7;
+      return `${h < 10 ? '0' + h : h}:00`;
+    });
+
+    this.availableTimeSlots = hours.map(h => {
+      const rawHour = h.replace(':', '');
+      let isAvailable = true;
+
+      // Check Global Block
+      if (this.scheduleConfig.blockedHours.includes(rawHour)) {
+        isAvailable = false;
+      }
+
+      // Check Specific Block
+      const specificBlock = this.scheduleConfig.specificBlocks?.find(b => b.date === dateStr);
+      if (specificBlock && specificBlock.hours.includes(rawHour)) {
+        isAvailable = false;
+      }
+
+      // Check Existing Appointments
+      const taken = this.takenAppointments.find(a => a.timeSlot === h); // Assuming appointment stores '07:00' format? 
+      // Wait, Appointment model says timeSlot: string. Admin layout stores '07:00' but checks '0700'.
+      // My previous logic in AdminTurnos uses '07:00' for display and '0700' for storage comparison.
+      // Let's ensure consistent format. Appointment.timeSlot should probably match the display format '07:00' OR raw.
+      // SolicitarTurno.ts:42 used '08:00 AM'. It was inconsistent.
+      // Let's standardise on '07:00' format for Apppointment.timeSlot.
+      if (taken) isAvailable = false;
+
+      return { time: h, available: isAvailable };
+    });
   }
 
   getSelectedDateText(): string {
     if (!this.selectedDate) {
       return 'Selecciona una fecha';
     }
-
     const date = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth(), this.selectedDate);
     const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
     const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-
     return `${days[date.getDay()]} ${this.selectedDate} de ${months[date.getMonth()]}`;
   }
 
@@ -201,6 +268,11 @@ export class SolicitarTurno implements OnInit {
   }
 
   confirmAppointment() {
+    if (this.currentUser && this.currentUser.active === false) {
+      alert('Tu cuenta está restringida. No puedes solicitar nuevos turnos.');
+      return;
+    }
+
     if (!this.selectedMotorcycle || !this.selectedService || !this.selectedDate || !this.selectedTime) {
       alert('Por favor completa todos los campos');
       return;
@@ -208,22 +280,26 @@ export class SolicitarTurno implements OnInit {
 
     const appointment: Appointment = {
       userId: localStorage.getItem('userId') || '',
-      motorcycle: this.selectedMotorcycle,
+      motorcycle: this.selectedMotorcycle!,
       service: this.selectedService,
       date: new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth(), this.selectedDate),
       timeSlot: this.selectedTime,
       totalPrice: this.getTotalPrice(),
-      status: 'pending'
+      status: 'pending',
+      createdAt: new Date().toISOString()
     };
 
-    // Save to localStorage
-    const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
-    appointments.push(appointment);
-    localStorage.setItem('appointments', JSON.stringify(appointments));
-
-    // Navigate to turnos page with success message
-    this.router.navigate(['/dashboard/turnos'], {
-      state: { message: '¡Turno confirmado exitosamente! Te enviaremos un recordatorio por email.' }
+    // Save to API
+    this.http.post('http://localhost:3000/appointments', appointment).subscribe({
+      next: () => {
+        this.router.navigate(['/dashboard/turnos'], {
+          state: { message: '¡Turno confirmado exitosamente! Te enviaremos un recordatorio por email.' }
+        });
+      },
+      error: (err) => {
+        console.error('Error creating appointment', err);
+        alert('Hubo un error al confirmar el turno. Por favor intenta nuevamente.');
+      }
     });
   }
 }

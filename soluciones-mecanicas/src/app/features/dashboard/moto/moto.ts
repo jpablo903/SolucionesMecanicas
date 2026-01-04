@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../auth.service';
-import { Motorcycle } from '../dashboard.models';
+import { Motorcycle, User } from '../dashboard.models';
 
 @Component({
     selector: 'app-moto',
@@ -20,6 +20,7 @@ export class Moto implements OnInit {
     editingMotoId: string | null = null;
     successMessage: string | null = null;
     errorMessage: string | null = null;
+    currentUser: User | null = null;
 
     private apiUrl = 'http://localhost:3000/motorcycles';
 
@@ -31,6 +32,9 @@ export class Moto implements OnInit {
     ) { }
 
     ngOnInit() {
+        this.authService.currentUser$.subscribe(user => {
+            this.currentUser = user;
+        });
         this.initializeForm();
         this.loadMotorcycles();
     }
@@ -99,6 +103,12 @@ export class Moto implements OnInit {
             return;
         }
 
+        // Check restricted status
+        if (this.currentUser && this.currentUser.active === false) {
+            alert('Tu cuenta está restringida. No puedes agregar ni editar motos.');
+            return;
+        }
+
         this.loading = true;
         this.errorMessage = null;
         this.successMessage = null;
@@ -113,7 +123,8 @@ export class Moto implements OnInit {
             version: formValue.version || '',
             year: parseInt(formValue.year),
             licensePlate: formValue.licensePlate,
-            displayName: `${formValue.brand} ${formValue.model} (${formValue.year}) - ${formValue.licensePlate}`
+            displayName: `${formValue.brand} ${formValue.model} (${formValue.year}) - ${formValue.licensePlate}`,
+            active: true
         };
 
         if (this.editingMotoId) {
@@ -155,6 +166,12 @@ export class Moto implements OnInit {
     }
 
     deleteMoto(moto: Motorcycle) {
+        // Check restricted status
+        if (this.currentUser && this.currentUser.active === false) {
+            alert('Tu cuenta está restringida. No puedes eliminar motos.');
+            return;
+        }
+
         if (!confirm(`¿Estás seguro de que deseas eliminar ${moto.brand} ${moto.model}?`)) {
             return;
         }

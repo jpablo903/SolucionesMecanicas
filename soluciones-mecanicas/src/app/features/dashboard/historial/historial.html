@@ -1,15 +1,103 @@
 <div class="min-h-screen bg-background-dark p-4 md:p-8">
     <div class="max-w-7xl mx-auto">
-        <h1 class="text-white text-3xl font-bold mb-2">Historial de Servicios</h1>
-        <p class="text-text-secondary mb-8">Consulta el historial de mantenimientos realizados</p>
-
-        <!-- Coming soon placeholder -->
-        <div class="bg-surface-dark border border-border-dark rounded-xl p-12 text-center">
-            <div class="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <span class="material-symbols-outlined text-5xl text-primary">receipt_long</span>
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <div>
+                <h1 class="text-white text-3xl font-bold mb-2">Historial de Servicios</h1>
+                <p class="text-text-secondary">Consulta el historial de mantenimientos realizados</p>
             </div>
-            <h3 class="text-white text-xl font-bold mb-2">Historial de Servicios</h3>
-            <p class="text-text-secondary">Esta sección estará disponible próximamente</p>
+
+            <!-- Filters -->
+            <div class="flex bg-surface-dark p-1 rounded-lg border border-border-dark">
+                <button (click)="setFilter('all')" class="px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                    [class.bg-primary]="filterStatus === 'all'" [class.text-white]="filterStatus === 'all'"
+                    [class.text-gray-400]="filterStatus !== 'all'" [class.hover:text-white]="filterStatus !== 'all'">
+                    Todos
+                </button>
+                <button (click)="setFilter('completed')"
+                    class="px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                    [class.bg-green-600]="filterStatus === 'completed'"
+                    [class.text-white]="filterStatus === 'completed'"
+                    [class.text-gray-400]="filterStatus !== 'completed'"
+                    [class.hover:text-white]="filterStatus !== 'completed'">
+                    Realizados
+                </button>
+                <button (click)="setFilter('cancelled')"
+                    class="px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                    [class.bg-red-600]="filterStatus === 'cancelled'" [class.text-white]="filterStatus === 'cancelled'"
+                    [class.text-gray-400]="filterStatus !== 'cancelled'"
+                    [class.hover:text-white]="filterStatus !== 'cancelled'">
+                    Cancelados
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="loading" class="flex justify-center items-center py-20">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+
+        <!-- History Table -->
+        <div *ngIf="!loading && filteredAppointments.length > 0"
+            class="bg-surface-dark border border-border-dark rounded-xl overflow-hidden shadow-lg">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-900/50 border-b border-border-dark">
+                            <th class="p-4 text-xs font-semibold uppercase text-gray-400 tracking-wider">Fecha</th>
+                            <th class="p-4 text-xs font-semibold uppercase text-gray-400 tracking-wider">Hora</th>
+                            <th class="p-4 text-xs font-semibold uppercase text-gray-400 tracking-wider">Vehículo</th>
+                            <th class="p-4 text-xs font-semibold uppercase text-gray-400 tracking-wider">Servicio</th>
+                            <th class="p-4 text-xs font-semibold uppercase text-gray-400 tracking-wider">Precio</th>
+                            <th class="p-4 text-xs font-semibold uppercase text-gray-400 tracking-wider">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-border-dark">
+                        <tr *ngFor="let apt of filteredAppointments" class="group hover:bg-white/5 transition-colors">
+                            <td class="p-4 text-sm text-gray-300 font-medium whitespace-nowrap">
+                                {{ formatDate(apt.date) }}
+                            </td>
+                            <td class="p-4 text-sm text-gray-300 font-mono">
+                                {{ apt.timeSlot }}
+                            </td>
+                            <td class="p-4 text-sm text-gray-300">
+                                <div class="font-medium text-white">{{ apt.motorcycle.brand }} {{ apt.motorcycle.model
+                                    }}</div>
+                                <div class="text-xs text-gray-500">{{ apt.motorcycle.licensePlate }}</div>
+                            </td>
+                            <td class="p-4 text-sm text-gray-400">
+                                {{ apt.service.name }}
+                            </td>
+                            <td class="p-4 text-sm text-gray-300 font-medium">
+                                {{ getFormattedPrice(apt.totalPrice || apt.service.price) }}
+                            </td>
+                            <td class="p-4">
+                                <span class="px-3 py-1 rounded-full text-xs font-medium border inline-flex items-center"
+                                    [class]="getStatusClass(apt.status)">
+                                    {{ getStatusText(apt) }}
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!loading && filteredAppointments.length === 0"
+            class="bg-surface-dark border border-border-dark rounded-xl p-12 text-center">
+            <div class="w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-3xl text-gray-500">
+                    {{ filterStatus === 'all' ? 'history' : (filterStatus === 'completed' ? 'task_alt' : 'cancel') }}
+                </span>
+            </div>
+            <h3 class="text-white text-xl font-bold mb-2">
+                {{ filterStatus === 'all' ? 'Sin historial' : (filterStatus === 'completed' ? 'Sin servicios realizados'
+                : 'Sin turnos cancelados') }}
+            </h3>
+            <p class="text-text-secondary">
+                {{ filterStatus === 'all' ? 'Aún no tienes turnos completados o cancelados.' : 'No se encontraron
+                resultados para este filtro.' }}
+            </p>
         </div>
     </div>
 </div>
