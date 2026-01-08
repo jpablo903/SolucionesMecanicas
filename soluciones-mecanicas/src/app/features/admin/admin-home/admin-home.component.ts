@@ -5,6 +5,7 @@ import { forkJoin, map } from 'rxjs';
 import { Appointment, Service } from '../../dashboard/dashboard.models';
 import { AuthService } from '../../../auth.service';
 import { AdminService } from '../admin.service';
+import Swal from 'sweetalert2';
 
 interface AppointmentWithDetails extends Appointment {
   clientName?: string;
@@ -139,7 +140,9 @@ export class AdminHome implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.loadData();
+    this.adminService.checkAbsentAppointments().subscribe(() => {
+      this.loadData();
+    });
   }
 
   loadData() {
@@ -189,15 +192,40 @@ export class AdminHome implements OnInit {
     });
   }
 
-  cancelTurn(appointment: AppointmentWithDetails) {
-    if (!confirm('¿Estás seguro de cancelar este turno?')) return;
 
+
+  cancelTurn(appointment: AppointmentWithDetails) {
     if (!appointment.id) return;
-    this.adminService.cancelAppointment(appointment.id, 'admin').subscribe(() => {
-      appointment.status = 'cancelled';
-      appointment.cancelledBy = 'admin';
-      this.loadData();
-      this.cdr.detectChanges();
+
+    Swal.fire({
+      title: '¿Cancelar turno?',
+      text: `Estás por cancelar el turno de ${appointment.clientName}.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#3b82f6',
+      confirmButtonText: 'Sí, cancelar',
+      cancelButtonText: 'No',
+      background: '#1f2937',
+      color: '#fff'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.adminService.cancelAppointment(appointment.id!, 'admin').subscribe(() => {
+          appointment.status = 'cancelled';
+          appointment.cancelledBy = 'admin';
+          this.loadData();
+          this.cdr.detectChanges();
+          Swal.fire({
+            title: 'Cancelado',
+            text: 'El turno ha sido cancelado correctamente.',
+            icon: 'success',
+            background: '#1f2937',
+            color: '#fff',
+            timer: 1500,
+            showConfirmButton: false
+          });
+        });
+      }
     });
   }
 

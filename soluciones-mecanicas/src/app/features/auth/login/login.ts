@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -53,16 +54,35 @@ export class Login implements OnInit {
       next: (user) => {
         this.loading = false;
 
-        if (user.role === 'admin') {
-          this.router.navigate(['/admin']);
-        } else {
-          this.router.navigate(['/dashboard']);
-        }
+        Swal.fire({
+          title: '¡Bienvenido!',
+          text: `Hola, ${user.firstName}`,
+          icon: 'success',
+          background: '#1f2937',
+          color: '#fff',
+          timer: 1500,
+          showConfirmButton: false
+        }).then(() => {
+          if (user.role === 'admin') {
+            this.router.navigate(['/admin']);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
+        });
       },
       error: (error) => {
         this.loading = false;
         this.errorMessage = 'Credenciales inválidas. Por favor intenta de nuevo.';
         console.error('Login error:', error);
+
+        Swal.fire({
+          title: 'Error de acceso',
+          text: 'Email o contraseña incorrectos',
+          icon: 'error',
+          background: '#1f2937',
+          color: '#fff',
+          confirmButtonColor: '#ef4444'
+        });
       }
     });
   }

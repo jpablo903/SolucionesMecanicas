@@ -18,6 +18,7 @@ module.exports = {
       },
       fontFamily: {
         'display': ['Space Grotesk', 'sans-serif'],
+        'brand': ['"Blacked Out"', 'sans-serif'],
         'body': ['Noto Sans', 'sans-serif'],
       },
       borderRadius: {

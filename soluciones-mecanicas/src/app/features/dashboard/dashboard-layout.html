@@ -6,10 +6,13 @@
         <div class="h-16 flex items-center justify-between px-4 border-b border-border-dark">
             <div *ngIf="sidebarOpen" class="flex items-center gap-2">
                 <img src="/assets/images/logoBlanco.png" alt="Soluciones Mecánicas" class="h-8 w-auto">
-                <span class="text-white font-bold text-lg">Soluciones Mecánicas</span>
+                <span class="text-white text-lg font-brand uppercase tracking-widest">
+                    SOLUCIONES MECANICAS
+                </span>
             </div>
-            <span *ngIf="!sidebarOpen"
-                class="material-symbols-outlined text-primary text-2xl mx-auto">two_wheeler</span>
+            <div *ngIf="!sidebarOpen" class="w-full flex justify-center">
+                <img src="/assets/images/logoBlanco.png" alt="MotoFix" class="h-8 w-auto">
+            </div>
         </div>
 
         <!-- Navigation Menu -->

@@ -21,6 +21,12 @@
                     [class.hover:text-white]="filterStatus !== 'completed'">
                     Realizados
                 </button>
+                <button (click)="setFilter('absent')" class="px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                    [class.bg-gray-600]="filterStatus === 'absent'" [class.text-white]="filterStatus === 'absent'"
+                    [class.text-gray-400]="filterStatus !== 'absent'"
+                    [class.hover:text-white]="filterStatus !== 'absent'">
+                    Ausentes
+                </button>
                 <button (click)="setFilter('cancelled')"
                     class="px-4 py-2 rounded-md text-sm font-medium transition-colors"
                     [class.bg-red-600]="filterStatus === 'cancelled'" [class.text-white]="filterStatus === 'cancelled'"

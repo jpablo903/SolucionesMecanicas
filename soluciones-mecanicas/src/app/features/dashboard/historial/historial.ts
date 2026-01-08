@@ -15,7 +15,7 @@ export class Historial implements OnInit {
     historyAppointments: Appointment[] = [];
     loading = true;
 
-    filterStatus: 'all' | 'completed' | 'cancelled' = 'all';
+    filterStatus: 'all' | 'completed' | 'cancelled' | 'absent' = 'all';
 
     constructor(
         private authService: AuthService,
@@ -40,7 +40,7 @@ export class Historial implements OnInit {
         this.http.get<Appointment[]>(`http://localhost:3000/appointments?userId=${this.currentUser.id}`).subscribe({
             next: (apts) => {
                 this.historyAppointments = apts
-                    .filter(a => a.status === 'completed' || a.status === 'cancelled')
+                    .filter(a => a.status === 'completed' || a.status === 'cancelled' || a.status === 'absent')
                     .sort((a, b) => {
                         // Date Descending (Newest first)
                         return new Date(b.date).getTime() - new Date(a.date).getTime();
@@ -63,7 +63,7 @@ export class Historial implements OnInit {
         return this.historyAppointments.filter(apt => apt.status === this.filterStatus);
     }
 
-    setFilter(status: 'all' | 'completed' | 'cancelled') {
+    setFilter(status: 'all' | 'completed' | 'cancelled' | 'absent') {
         this.filterStatus = status;
     }
 
@@ -71,6 +71,7 @@ export class Historial implements OnInit {
         switch (status) {
             case 'completed': return 'bg-green-500/10 text-green-500 border-green-500/30';
             case 'cancelled': return 'bg-red-500/10 text-red-500 border-red-500/30';
+            case 'absent': return 'bg-gray-500/10 text-gray-500 border-gray-500/30';
             default: return 'bg-gray-500/10 text-gray-500 border-gray-500/30';
         }
     }
@@ -80,6 +81,7 @@ export class Historial implements OnInit {
             case 'completed': return 'Realizado';
             case 'cancelled':
                 return appointment.cancelledBy === 'admin' ? 'Cancelado por Administración' : 'Cancelado';
+            case 'absent': return 'Ausente';
             default: return appointment.status;
         }
     }

@@ -39,7 +39,7 @@ export interface Appointment {
     date: Date;
     timeSlot: string; // '0700', '1500' format
     totalPrice: number;
-    status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+    status: 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'absent';
     cancelledBy?: 'admin' | 'client'; // To track who cancelled
     createdAt?: string;
 }

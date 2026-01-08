@@ -5,7 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Motorcycle, Service, TimeSlot, Appointment, ScheduleConfig } from '../dashboard.models';
 import { AuthService } from '../../../auth.service';
-import { AdminService } from '../../admin/admin.service'; // Reusing service for config fetch
+import { AdminService } from '../../admin/admin.service';
+import Swal from 'sweetalert2'; // Reusing service for config fetch
 
 @Component({
   selector: 'app-solicitar-turno',
@@ -269,12 +270,25 @@ export class SolicitarTurno implements OnInit {
 
   confirmAppointment() {
     if (this.currentUser && this.currentUser.active === false) {
-      alert('Tu cuenta está restringida. No puedes solicitar nuevos turnos.');
+      Swal.fire({
+        title: 'Cuenta Restringida',
+        text: 'Tu cuenta está restringida. No puedes solicitar nuevos turnos.',
+        icon: 'error',
+        background: '#1f2937',
+        color: '#fff'
+      });
       return;
     }
 
     if (!this.selectedMotorcycle || !this.selectedService || !this.selectedDate || !this.selectedTime) {
-      alert('Por favor completa todos los campos');
+      Swal.fire({
+        title: 'Faltan datos',
+        text: 'Por favor completa todos los campos para continuar.',
+        icon: 'info',
+        background: '#1f2937',
+        color: '#fff',
+        confirmButtonColor: '#3b82f6'
+      });
       return;
     }
 
@@ -292,13 +306,27 @@ export class SolicitarTurno implements OnInit {
     // Save to API
     this.http.post('http://localhost:3000/appointments', appointment).subscribe({
       next: () => {
-        this.router.navigate(['/dashboard/turnos'], {
-          state: { message: '¡Turno confirmado exitosamente! Te enviaremos un recordatorio por email.' }
+        Swal.fire({
+          title: '¡Turno Confirmado!',
+          text: `Te esperamos el ${new Date(appointment.date).toLocaleDateString()} a las ${appointment.timeSlot}hs.`,
+          icon: 'success',
+          background: '#1f2937',
+          color: '#fff',
+          confirmButtonColor: '#22c55e',
+          confirmButtonText: 'Ver mis turnos'
+        }).then(() => {
+          this.router.navigate(['/dashboard/turnos']);
         });
       },
       error: (err) => {
         console.error('Error creating appointment', err);
-        alert('Hubo un error al confirmar el turno. Por favor intenta nuevamente.');
+        Swal.fire({
+          title: 'Error',
+          text: 'Hubo un error al confirmar el turno. Por favor intenta nuevamente.',
+          icon: 'error',
+          background: '#1f2937',
+          color: '#fff'
+        });
       }
     });
   }

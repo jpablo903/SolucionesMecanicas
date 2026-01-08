@@ -6,7 +6,7 @@
       "password": "testing123",
       "firstName": "Oscar",
       "lastName": "Insaurralde",
-      "phone": "1166336633",
+      "phone": "1166336634",
       "createdAt": "2026-01-04T13:15:45.109Z",
       "role": "client",
       "active": true
@@ -290,10 +290,10 @@
         "duration": "~1 h",
         "icon": "health_and_safety"
       },
-      "date": "2026-01-04T03:00:00.000Z",
-      "timeSlot": "18:00",
+      "date": "2026-01-06T02:15:29.088Z",
+      "timeSlot": "23:15",
       "totalPrice": 15000,
-      "status": "pending",
+      "status": "completed",
       "createdAt": "2026-01-04T17:36:10.987Z"
     },
     {
@@ -318,10 +318,10 @@
         "duration": "~45 min",
         "icon": "oil_barrel"
       },
-      "date": "2026-01-04T03:00:00.000Z",
-      "timeSlot": "19:00",
+      "date": "2026-01-06T01:59:48.331Z",
+      "timeSlot": "22:59",
       "totalPrice": 22000,
-      "status": "pending",
+      "status": "completed",
       "createdAt": "2026-01-04T17:36:37.461Z"
     },
     {
@@ -351,6 +351,34 @@
       "totalPrice": 22000,
       "status": "pending",
       "createdAt": "2026-01-04T17:37:36.810Z"
+    },
+    {
+      "id": "688d",
+      "userId": "b973",
+      "motorcycle": {
+        "id": "fe9f",
+        "userId": "b973",
+        "brand": "Yamaha",
+        "model": "YBR 125",
+        "version": "ED",
+        "year": 2018,
+        "licensePlate": "LNR995",
+        "displayName": "Yamaha YBR 125 (2018) - LNR995",
+        "active": true
+      },
+      "service": {
+        "id": "3",
+        "name": "Neumáticos",
+        "description": "Cambio o reparación de cubiertas.",
+        "price": 0,
+        "duration": "Variable",
+        "icon": "tire_repair"
+      },
+      "date": "2026-01-06T03:00:00.000Z",
+      "timeSlot": "09:00",
+      "totalPrice": 0,
+      "status": "pending",
+      "createdAt": "2026-01-06T02:13:49.023Z"
     }
   ],
   "serviceHistory": [],

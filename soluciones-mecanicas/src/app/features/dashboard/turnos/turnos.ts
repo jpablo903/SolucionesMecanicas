@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../auth.service';
 import { User, Appointment } from '../dashboard.models';
+import { AdminService } from '../../admin/admin.service';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-turnos',
@@ -21,6 +23,8 @@ export class Turnos implements OnInit {
         private authService: AuthService,
         private router: Router,
         private http: HttpClient,
+        private adminService: AdminService, // Note: We might need to make AdminService public or duplicate logic if modularity is strict.
+        // Assuming AdminService is provided in root, it should be accessible.
         private cdr: ChangeDetectorRef
     ) {
         // Check for success message from navigation state
@@ -36,14 +40,17 @@ export class Turnos implements OnInit {
     }
 
     ngOnInit() {
-        // Get current user
-        this.authService.currentUser$.subscribe(user => {
-            this.currentUser = user;
-            if (user) {
-                this.loadAppointments();
-            } else {
-                this.loading = false;
-            }
+        // Trigger absent check logic
+        this.adminService.checkAbsentAppointments().subscribe(() => {
+            // Get current user
+            this.authService.currentUser$.subscribe(user => {
+                this.currentUser = user;
+                if (user) {
+                    this.loadAppointments();
+                } else {
+                    this.loading = false;
+                }
+            });
         });
     }
 
@@ -69,24 +76,52 @@ export class Turnos implements OnInit {
     }
 
     cancelAppointment(appointment: Appointment) {
-        if (confirm('¿Estás seguro de que deseas cancelar este turno?')) {
-            // Optimistic update
-            const originalStatus = appointment.status;
-            appointment.status = 'cancelled';
+        Swal.fire({
+            title: '¿Cancelar turno?',
+            text: "Esta acción no se puede deshacer.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444', // red-500
+            cancelButtonColor: '#3b82f6', // blue-500
+            confirmButtonText: 'Sí, cancelar',
+            cancelButtonText: 'Volver',
+            background: '#1f2937', // gray-800
+            color: '#fff'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Optimistic update
+                const originalStatus = appointment.status;
+                appointment.status = 'cancelled';
 
-            this.http.patch(`http://localhost:3000/appointments/${appointment.id}`, { status: 'cancelled', cancelledBy: 'client' }).subscribe({
-                next: () => {
-                    this.cdr.detectChanges();
-                },
-                error: (err) => {
-                    console.error('Error cancelling', err);
-                    // Revert
-                    appointment.status = originalStatus;
-                    alert('Error al cancelar el turno');
-                    this.cdr.detectChanges();
-                }
-            });
-        }
+                this.http.patch(`http://localhost:3000/appointments/${appointment.id}`, { status: 'cancelled', cancelledBy: 'client' }).subscribe({
+                    next: () => {
+                        this.cdr.detectChanges();
+                        Swal.fire({
+                            title: 'Cancelado',
+                            text: 'El turno ha sido cancelado.',
+                            icon: 'success',
+                            background: '#1f2937',
+                            color: '#fff',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    },
+                    error: (err) => {
+                        console.error('Error cancelling', err);
+                        // Revert
+                        appointment.status = originalStatus;
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'No se pudo cancelar el turno.',
+                            icon: 'error',
+                            background: '#1f2937',
+                            color: '#fff'
+                        });
+                        this.cdr.detectChanges();
+                    }
+                });
+            }
+        });
     }
 
     getStatusClass(status: string): string {
