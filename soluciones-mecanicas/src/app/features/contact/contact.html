@@ -22,7 +22,18 @@
                     class="mb-4 p-4 rounded-lg bg-green-500/10 border border-green-500/30 text-green-500 text-sm">
                     {{ successMessage }}
                 </div>
-                <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
+                <!-- Error Message -->
+                <div *ngIf="errorMessage"
+                    class="mb-4 p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 text-sm">
+                    {{ errorMessage }}
+                </div>
+                <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field"
+                    [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
+                    <!-- Honeypot field for spam protection -->
+                    <p class="hidden">
+                        <label>Don't fill this out: <input name="bot-field" /></label>
+                    </p>
+                    <input type="hidden" name="form-name" value="contact" />
                     <!-- Row 1: Name & Email -->
                     <div class="flex flex-col md:flex-row gap-5">
                         <label class="flex flex-col flex-1">
@@ -160,18 +171,8 @@
                 class="relative w-full h-64 lg:h-80 rounded-2xl overflow-hidden border border-gray-200 dark:border-[#3c4453] shadow-md group">
                 <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3290.1980027654135!2d-58.56083428803775!3d-34.447121349133624!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bca560ec9102cd%3A0x6987af3185d0844!2sAGD%2C%20Leandro%20N.%20Alem%201438%2C%20B1646%20San%20Fernando%2C%20Provincia%20de%20Buenos%20Aires!5e0!3m2!1ses-419!2sar!4v1767529377740!5m2!1ses-419!2sar"
-                    width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                    class="w-full h-full" style="border:0;" allowfullscreen="" loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade"></iframe>
-                <!-- Map Overlay Pin -->
-                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div class="relative flex flex-col items-center">
-                        <div
-                            class="size-10 bg-primary text-white rounded-full flex items-center justify-center shadow-lg animate-bounce">
-                            <span class="material-symbols-outlined">location_on</span>
-                        </div>
-                        <div class="w-4 h-1 bg-black/50 blur-[2px] rounded-full mt-1"></div>
-                    </div>
-                </div>
                 <!-- Overlay Label -->
                 <div
                     class="absolute bottom-3 left-3 bg-white/90 dark:bg-surface-dark/90 backdrop-blur px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
