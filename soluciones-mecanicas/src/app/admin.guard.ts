@@ -14,7 +14,6 @@ export const adminGuard: CanActivateFn = (route, state) => {
                 return true;
             }
 
-            // Redirect to dashboard if logged in but not admin, or login if not logged in
             if (user) {
                 return router.createUrlTree(['/dashboard']);
             }
