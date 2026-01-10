@@ -1,69 +1,41 @@
-export interface Motorcycle {
-    id: string;
-    userId: string;
-    brand: string;
-    model: string;
-    version?: string;
-    year: number;
-    licensePlate: string;
-    displayName: string;
-    active?: boolean;
-}
+/**
+ * Dashboard Models - Re-exports from Core Domain Entities
+ * 
+ * This file provides backwards compatibility for existing components
+ * that import from dashboard.models.ts
+ * 
+ * @deprecated Import directly from '@app/core/domain/entities' instead
+ */
 
-export interface Service {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    duration: string;
-    icon: string;
-}
+// Re-export all entities from core domain (using type export for interfaces)
+export type {
+    User,
+    UserRole,
+    CreateUserDTO,
+    UpdateUserDTO,
+    LoginCredentials
+} from '../../core/domain/entities/user.entity';
 
-export interface TimeSlot {
-    time: string;
-    available: boolean;
-}
+export type {
+    Motorcycle,
+    CreateMotorcycleDTO,
+    UpdateMotorcycleDTO
+} from '../../core/domain/entities/motorcycle.entity';
 
-export interface ScheduleConfig {
-    id?: string; // usually 'default' or similar
-    blockedDays: string[]; // ISO date strings 'YYYY-MM-DD'
-    blockedHours: string[]; // '0700', '0800', etc. (Global)
-    specificBlocks: { date: string, hours: string[] }[]; // Specific date exceptions
-}
+export type {
+    Service
+} from '../../core/domain/entities/service.entity';
 
-export interface Appointment {
-    id?: string;
-    userId: string;
-    motorcycle: Motorcycle;
-    service: Service;
-    date: Date;
-    timeSlot: string; // '0700', '1500' format
-    totalPrice: number;
-    status: 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'absent';
-    cancelledBy?: 'admin' | 'client'; // To track who cancelled
-    createdAt?: string;
-}
+export type {
+    Appointment,
+    AppointmentStatus,
+    CancelledBy,
+    CreateAppointmentDTO,
+    UpdateAppointmentStatusDTO,
+    TimeSlot
+} from '../../core/domain/entities/appointment.entity';
 
-export interface User {
-    id: string;
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    phone: string;
-    createdAt: string;
-    role: 'admin' | 'client';
-    active: boolean;
-}
-
-export interface ServiceHistory {
-    id: string;
-    userId: string;
-    appointmentId: string;
-    motorcycle: Motorcycle;
-    service: Service;
-    date: string;
-    status: 'completed' | 'cancelled';
-    price: number;
-    notes?: string;
-}
+export type {
+    ScheduleConfig,
+    SpecificBlock
+} from '../../core/domain/entities/schedule-config.entity';

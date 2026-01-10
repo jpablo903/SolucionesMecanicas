@@ -165,13 +165,7 @@ export class AdminHistory implements OnInit {
         const dateStr = now.toISOString();
         const timeSlotStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
 
-        const updateData = {
-          status: 'pending',
-          date: dateStr,
-          timeSlot: timeSlotStr
-        };
-
-        this.adminService['http'].patch(`${this.adminService['apiUrl']}/appointments/${apt.id}`, updateData).subscribe(() => {
+        this.adminService.reactivateAppointment(apt.id!, dateStr, timeSlotStr).subscribe(() => {
           // Remove from history list as it is now active
           this.historyAppointments = this.historyAppointments.filter(a => a.id !== apt.id);
           this.cdr.detectChanges();

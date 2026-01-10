@@ -1,21 +1,51 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, tap, catchError } from 'rxjs/operators';
-import { User } from './features/dashboard/dashboard.models';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
+// Domain entities
+import { User } from './core/domain/entities/user.entity';
+
+// Use Cases
+import { LoginUseCase } from './core/use-cases/auth/login.use-case';
+import { RegisterUseCase } from './core/use-cases/auth/register.use-case';
+import { LogoutUseCase } from './core/use-cases/auth/logout.use-case';
+import { UpdateUserProfileUseCase } from './core/use-cases/users/update-user-profile.use-case';
+import { ChangePasswordUseCase } from './core/use-cases/users/change-password.use-case';
+import { GetAllUsersUseCase } from './core/use-cases/users/get-all-users.use-case';
+import { UpdateUserStatusUseCase } from './core/use-cases/users/update-user-status.use-case';
+
+// Repository Port (for direct queries not covered by use cases)
+import { UserRepositoryPort } from './core/ports/out/user.repository.port';
+
+/**
+ * Auth Service - Facade that coordinates authentication-related use cases
+ * and maintains reactive state for the current user.
+ * 
+ * This service acts as the bridge between the presentation layer (components)
+ * and the core domain (use cases), following the Hexagonal Architecture pattern.
+ */
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
-    private apiUrl = 'http://localhost:3000/users';
     private isLoggedInSubject = new BehaviorSubject<boolean>(this.hasToken());
     private currentUserSubject = new BehaviorSubject<User | null>(null);
 
     isLoggedIn$ = this.isLoggedInSubject.asObservable();
     currentUser$ = this.currentUserSubject.asObservable();
 
-    constructor(private http: HttpClient) {
+    constructor(
+        // Use Cases
+        private loginUseCase: LoginUseCase,
+        private registerUseCase: RegisterUseCase,
+        private logoutUseCase: LogoutUseCase,
+        private updateUserProfileUseCase: UpdateUserProfileUseCase,
+        private changePasswordUseCase: ChangePasswordUseCase,
+        private getAllUsersUseCase: GetAllUsersUseCase,
+        private updateUserStatusUseCase: UpdateUserStatusUseCase,
+        // Repository for direct queries
+        private userRepository: UserRepositoryPort
+    ) {
         // Load current user if logged in
         if (this.hasToken()) {
             this.loadCurrentUser();
@@ -41,20 +71,8 @@ export class AuthService {
      * Auto-assigns firstName="Nuevo" and lastName="Usuario"
      */
     register(email: string, password: string): Observable<User> {
-        const newUser: Omit<User, 'id'> = {
-            email,
-            password, // In production, this should be hashed on the backend
-            firstName: 'Nuevo',
-            lastName: 'Usuario',
-            phone: '',
-            createdAt: new Date().toISOString(),
-            role: 'client',
-            active: true
-        };
-
-        return this.http.post<User>(this.apiUrl, newUser).pipe(
+        return this.registerUseCase.execute(email, password).pipe(
             tap(user => {
-                localStorage.setItem('userId', user.id);
                 this.isLoggedInSubject.next(true);
                 this.currentUserSubject.next(user);
             })
@@ -65,22 +83,8 @@ export class AuthService {
      * Login with email and password
      */
     login(email: string, password: string): Observable<User> {
-        return this.http.get<User[]>(`${this.apiUrl}?email=${email}&password=${password}`).pipe(
-            map(users => {
-                if (users.length > 0) {
-                    const user = users[0];
-                    if (!user.active && user.role !== 'admin') {
-                        // Optional: Throw error or allow login with restricted access?
-                        // Requirement: "si el administrador pone en off al cliente, este cliente, podra entrar a su dashboard pero no podra hacer nada mas que mirar"
-                        // So we continue login, but UI handles restriction.
-                    }
-                    return user;
-                } else {
-                    throw new Error('Invalid credentials');
-                }
-            }),
+        return this.loginUseCase.execute(email, password).pipe(
             tap(user => {
-                localStorage.setItem('userId', user.id);
                 this.isLoggedInSubject.next(true);
                 this.currentUserSubject.next(user);
             })
@@ -91,14 +95,14 @@ export class AuthService {
      * Get current user by ID
      */
     getCurrentUser(userId: string): Observable<User> {
-        return this.http.get<User>(`${this.apiUrl}/${userId}`);
+        return this.userRepository.findById(userId);
     }
 
     /**
      * Update user profile (firstName, lastName, phone)
      */
     updateUserProfile(userId: string, data: Partial<User>): Observable<User> {
-        return this.http.patch<User>(`${this.apiUrl}/${userId}`, data).pipe(
+        return this.updateUserProfileUseCase.execute(userId, data).pipe(
             tap(user => this.currentUserSubject.next(user))
         );
     }
@@ -107,7 +111,7 @@ export class AuthService {
      * Change user password
      */
     changePassword(userId: string, newPassword: string): Observable<User> {
-        return this.http.patch<User>(`${this.apiUrl}/${userId}`, { password: newPassword }).pipe(
+        return this.changePasswordUseCase.execute(userId, newPassword).pipe(
             tap(user => this.currentUserSubject.next(user))
         );
     }
@@ -116,7 +120,7 @@ export class AuthService {
      * Logout current user
      */
     logout(): void {
-        localStorage.removeItem('userId');
+        this.logoutUseCase.execute();
         this.isLoggedInSubject.next(false);
         this.currentUserSubject.next(null);
     }
@@ -140,14 +144,13 @@ export class AuthService {
      * Get all users (Admin only)
      */
     getAllUsers(): Observable<User[]> {
-        // In a real app, you'd filter by role=client ideally, but we can filter on client side
-        return this.http.get<User[]>(this.apiUrl);
+        return this.getAllUsersUseCase.execute();
     }
 
     /**
      * Update user active status (Admin only)
      */
     updateUserStatus(userId: string, active: boolean): Observable<User> {
-        return this.http.patch<User>(`${this.apiUrl}/${userId}`, { active });
+        return this.updateUserStatusUseCase.execute(userId, active);
     }
 }

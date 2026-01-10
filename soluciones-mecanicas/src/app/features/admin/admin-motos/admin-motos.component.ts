@@ -164,8 +164,8 @@ export class AdminMotos implements OnInit {
 
         // Basic duplicate check if license plate changed
         if (this.originalMoto && this.editingMoto.licensePlate !== this.originalMoto.licensePlate) {
-            this.adminService.checkPatentUnique(this.editingMoto.licensePlate).subscribe(duplicates => {
-                if (duplicates.length > 0) {
+            this.adminService.checkPatentUnique(this.editingMoto.licensePlate).subscribe(exists => {
+                if (exists) {
                     alert('Ya existe una moto con esa patente.');
                     return;
                 }

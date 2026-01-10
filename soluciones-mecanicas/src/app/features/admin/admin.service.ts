@@ -1,86 +1,94 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, forkJoin, switchMap } from 'rxjs';
-import { Motorcycle } from '../dashboard/dashboard.models';
+import { Observable } from 'rxjs';
 
+// Domain entities
+import { Motorcycle } from '../dashboard/dashboard.models';
+import { Appointment } from '../../core/domain/entities/appointment.entity';
+import { ScheduleConfig } from '../../core/domain/entities/schedule-config.entity';
+
+// Use Cases
+import { GetAllMotorcyclesUseCase } from '../../core/use-cases/motorcycles/get-all-motorcycles.use-case';
+import { UpdateMotorcycleUseCase } from '../../core/use-cases/motorcycles/update-motorcycle.use-case';
+import { CancelAppointmentUseCase } from '../../core/use-cases/appointments/cancel-appointment.use-case';
+import { CheckAbsentAppointmentsUseCase } from '../../core/use-cases/appointments/check-absent-appointments.use-case';
+
+// Repository Ports (for operations not fully covered by use cases)
+import { AppointmentRepositoryPort } from '../../core/ports/out/appointment.repository.port';
+import { MotorcycleRepositoryPort } from '../../core/ports/out/motorcycle.repository.port';
+import { ScheduleRepositoryPort } from '../../core/ports/out/schedule.repository.port';
+
+/**
+ * Admin Service - Facade that coordinates admin-related use cases
+ * and provides access to admin-specific operations.
+ * 
+ * This service acts as the bridge between admin components
+ * and the core domain (use cases), following the Hexagonal Architecture pattern.
+ */
 @Injectable({
     providedIn: 'root'
 })
 export class AdminService {
-    private apiUrl = 'http://localhost:3000';
 
-    constructor(private http: HttpClient) { }
+    constructor(
+        // Use Cases
+        private getAllMotorcyclesUseCase: GetAllMotorcyclesUseCase,
+        private updateMotorcycleUseCase: UpdateMotorcycleUseCase,
+        private cancelAppointmentUseCase: CancelAppointmentUseCase,
+        private checkAbsentAppointmentsUseCase: CheckAbsentAppointmentsUseCase,
+        // Repository Ports for direct operations
+        private appointmentRepository: AppointmentRepositoryPort,
+        private motorcycleRepository: MotorcycleRepositoryPort,
+        private scheduleRepository: ScheduleRepositoryPort
+    ) { }
 
-    // Motorcycles
+    // ========== Motorcycles ==========
+
     getAllMotos(): Observable<Motorcycle[]> {
-        return this.http.get<Motorcycle[]>(`${this.apiUrl}/motorcycles`);
+        return this.getAllMotorcyclesUseCase.execute();
     }
 
     updateMoto(moto: Motorcycle): Observable<Motorcycle> {
-        return this.http.put<Motorcycle>(`${this.apiUrl}/motorcycles/${moto.id}`, moto);
+        return this.updateMotorcycleUseCase.execute(moto);
     }
 
-    // Helper to check for duplicate patent
-    checkPatentUnique(licensePlate: string): Observable<Motorcycle[]> {
-        return this.http.get<Motorcycle[]>(`${this.apiUrl}/motorcycles?licensePlate=${licensePlate}`);
+    checkPatentUnique(licensePlate: string): Observable<boolean> {
+        return this.motorcycleRepository.licensePlateExists(licensePlate);
     }
 
-    // Schedule Config
-    getScheduleConfig(): Observable<any> {
-        return this.http.get<any>(`${this.apiUrl}/scheduleConfig`);
+    // ========== Schedule Config ==========
+
+    getScheduleConfig(): Observable<ScheduleConfig> {
+        return this.scheduleRepository.getConfig();
     }
 
-    updateScheduleConfig(config: any): Observable<any> {
-        return this.http.put<any>(`${this.apiUrl}/scheduleConfig`, config);
+    updateScheduleConfig(config: ScheduleConfig): Observable<ScheduleConfig> {
+        return this.scheduleRepository.updateConfig(config);
     }
 
-    // Appointments
-    getAppointments(): Observable<any[]> {
-        return this.http.get<any[]>(`${this.apiUrl}/appointments`);
+    // ========== Appointments ==========
+
+    getAppointments(): Observable<Appointment[]> {
+        return this.appointmentRepository.findAll();
     }
 
-    cancelAppointment(id: string, cancelledBy: 'admin' | 'client' = 'admin'): Observable<any> {
-        return this.http.patch(`${this.apiUrl}/appointments/${id}`, { status: 'cancelled', cancelledBy });
+    cancelAppointment(id: string, cancelledBy: 'admin' | 'client' = 'admin'): Observable<Appointment> {
+        return this.cancelAppointmentUseCase.execute(id, cancelledBy);
     }
 
-    cancelMultipleAppointments(ids: string[], cancelledBy: 'admin' | 'client' = 'admin'): Observable<any[]> {
-        if (ids.length === 0) return new Observable(obs => { obs.next([]); obs.complete(); });
-        const requests = ids.map(id => this.cancelAppointment(id, cancelledBy));
-        return forkJoin(requests);
+    cancelMultipleAppointments(ids: string[], cancelledBy: 'admin' | 'client' = 'admin'): Observable<Appointment[]> {
+        return this.cancelAppointmentUseCase.executeMultiple(ids, cancelledBy);
     }
 
-    // Check for absent appointments (15 min tolerance)
-    checkAbsentAppointments(): Observable<any> {
-        return this.getAppointments().pipe(
-            switchMap(appointments => {
-                const now = new Date();
-                const updates: Observable<any>[] = [];
+    checkAbsentAppointments(): Observable<Appointment[]> {
+        return this.checkAbsentAppointmentsUseCase.execute();
+    }
 
-                appointments.forEach(apt => {
-                    if (apt.status === 'pending' || apt.status === 'confirmed') {
-                        const aptDate = new Date(apt.date);
-                        const [hours, minutes] = apt.timeSlot.split(':').map(Number);
-
-                        // Set appointment time (using local date logic assuming date is strictly date)
-                        const aptDateTime = new Date(aptDate);
-                        aptDateTime.setHours(hours, minutes, 0, 0);
-
-                        // Add 15 minutes tolerance
-                        const toleranceTime = new Date(aptDateTime.getTime() + 15 * 60000);
-
-                        if (now > toleranceTime) {
-                            // Mark as absent
-                            updates.push(this.http.patch(`${this.apiUrl}/appointments/${apt.id}`, { status: 'absent' }));
-                        }
-                    }
-                });
-
-                if (updates.length > 0) {
-                    return forkJoin(updates);
-                } else {
-                    return new Observable(obs => { obs.next([]); obs.complete(); });
-                }
-            })
-        );
+    /**
+     * Reactivate an absent appointment back to pending status
+     */
+    reactivateAppointment(id: string, newDate: string, newTimeSlot: string): Observable<Appointment> {
+        return this.appointmentRepository.updateStatus(id, {
+            status: 'pending'
+        });
     }
 }

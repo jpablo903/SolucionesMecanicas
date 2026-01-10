@@ -318,7 +318,7 @@ export class AdminTurnos implements OnInit {
                 new Date(a.date).toISOString().startsWith(dateStr) // Simple date match
             );
             if (toCancel.length > 0) {
-                this.adminService.cancelMultipleAppointments(toCancel.map(a => a.id)).subscribe({
+                this.adminService.cancelMultipleAppointments(toCancel.map(a => a.id).filter((id): id is string => !!id)).subscribe({
                     next: () => alert(`Se han cancelado ${toCancel.length} turnos para el día ${dateStr}.`),
                     error: (e) => console.error(e)
                 });
@@ -338,7 +338,7 @@ export class AdminTurnos implements OnInit {
 
             if (toCancel.length > 0) {
                 if (confirm(`Bloquear este horario globalmente cancelará ${toCancel.length} turnos existentes. ¿Continuar?`)) {
-                    this.adminService.cancelMultipleAppointments(toCancel.map(a => a.id)).subscribe({
+                    this.adminService.cancelMultipleAppointments(toCancel.map(a => a.id).filter((id): id is string => !!id)).subscribe({
                         next: () => console.log('Turnos cancelados'),
                         error: (e) => console.error(e)
                     });
@@ -355,7 +355,7 @@ export class AdminTurnos implements OnInit {
                 a.timeSlot.replace(':', '') === timeSlot // Compare normalized '1400' with '1400'
             );
             if (toCancel.length > 0) {
-                this.adminService.cancelMultipleAppointments(toCancel.map(a => a.id)).subscribe({
+                this.adminService.cancelMultipleAppointments(toCancel.map(a => a.id).filter((id): id is string => !!id)).subscribe({
                     next: () => alert(`Se ha cancelado el turno existente para este horario.`),
                     error: (e) => console.error(e)
                 });
