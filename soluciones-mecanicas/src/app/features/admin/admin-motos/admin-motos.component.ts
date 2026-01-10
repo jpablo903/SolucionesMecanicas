@@ -10,7 +10,19 @@ import { Motorcycle } from '../../dashboard/dashboard.models';
     imports: [CommonModule, FormsModule],
     template: `
     <div class="container mx-auto">
-        <h2 class="text-3xl font-bold mb-6 text-white">Administrar Motos</h2>
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+            <h2 class="text-3xl font-bold text-white flex items-center">
+                <span class="material-symbols-outlined mr-3 text-4xl">two_wheeler</span>
+                Administrar Motos
+            </h2>
+            
+            <!-- Search Bar -->
+            <div class="relative w-full md:w-80">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">search</span>
+                <input type="text" [(ngModel)]="searchTerm" placeholder="Buscar por patente..." 
+                    class="w-full bg-gray-900 border border-gray-700 text-gray-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block pl-10 p-2.5 shadow-lg">
+            </div>
+        </div>
         
         <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-700">
             <div class="overflow-x-auto">
@@ -26,7 +38,7 @@ import { Motorcycle } from '../../dashboard/dashboard.models';
                         </tr>
                     </thead>
                     <tbody class="bg-gray-800 divide-y divide-gray-700">
-                        <tr *ngFor="let moto of motos" class="hover:bg-gray-700/50 transition-colors">
+                        <tr *ngFor="let moto of filteredMotos" class="hover:bg-gray-700/50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="h-10 w-10 rounded-full bg-gray-700 flex items-center justify-center text-gray-400">
                                     <span class="material-symbols-outlined">two_wheeler</span>
@@ -94,6 +106,9 @@ import { Motorcycle } from '../../dashboard/dashboard.models';
                         </tr>
                     </tbody>
                 </table>
+                <div *ngIf="filteredMotos.length === 0" class="px-6 py-4 text-center text-gray-500">
+                    {{ searchTerm ? 'No se encontraron motos con esa patente.' : 'No hay motos registradas.' }}
+                </div>
             </div>
         </div>
     </div>
@@ -104,6 +119,17 @@ export class AdminMotos implements OnInit {
     editingId: string | null = null;
     editingMoto: Motorcycle | null = null;
     originalMoto: Motorcycle | null = null;
+    searchTerm = '';
+
+    get filteredMotos(): Motorcycle[] {
+        if (!this.searchTerm.trim()) {
+            return this.motos;
+        }
+        const term = this.searchTerm.toLowerCase().trim();
+        return this.motos.filter(moto =>
+            moto.licensePlate.toLowerCase().includes(term)
+        );
+    }
 
     constructor(private adminService: AdminService, private cdr: ChangeDetectorRef) { }
 

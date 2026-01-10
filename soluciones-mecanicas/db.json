@@ -3,10 +3,10 @@
     {
       "id": "b973",
       "email": "test@test",
-      "password": "testing123",
+      "password": "123123",
       "firstName": "Oscar",
       "lastName": "Insaurralde",
-      "phone": "1166336634",
+      "phone": "1166336637",
       "createdAt": "2026-01-04T13:15:45.109Z",
       "role": "client",
       "active": true
@@ -349,7 +349,7 @@
       "date": "2026-01-06T03:00:00.000Z",
       "timeSlot": "07:00",
       "totalPrice": 22000,
-      "status": "pending",
+      "status": "absent",
       "createdAt": "2026-01-04T17:37:36.810Z"
     },
     {
@@ -377,7 +377,7 @@
       "date": "2026-01-06T03:00:00.000Z",
       "timeSlot": "09:00",
       "totalPrice": 0,
-      "status": "pending",
+      "status": "absent",
       "createdAt": "2026-01-06T02:13:49.023Z"
     }
   ],

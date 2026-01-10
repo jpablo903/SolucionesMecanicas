@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../auth.service';
 import { User } from '../dashboard.models';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-config',
@@ -14,9 +15,8 @@ export class Config implements OnInit {
     currentUser: User | null = null;
     profileForm!: FormGroup;
     passwordForm!: FormGroup;
-    loading = false;
-    successMessage: string | null = null;
-    errorMessage: string | null = null;
+    profileLoading = false;
+    passwordLoading = false;
 
     constructor(
         private authService: AuthService,
@@ -63,13 +63,17 @@ export class Config implements OnInit {
         }
 
         if (this.currentUser.active === false) {
-            alert('Tu cuenta está restringida. No puedes modificar tu perfil.');
+            Swal.fire({
+                title: 'Restringido',
+                text: 'Tu cuenta está restringida. No puedes modificar tu perfil.',
+                icon: 'error',
+                background: '#1f2937',
+                color: '#fff'
+            });
             return;
         }
 
-        this.loading = true;
-        this.errorMessage = null;
-        this.successMessage = null;
+        this.profileLoading = true;
 
         const updates = {
             firstName: this.profileForm.get('firstName')?.value,
@@ -79,13 +83,26 @@ export class Config implements OnInit {
 
         this.authService.updateUserProfile(this.currentUser.id, updates).subscribe({
             next: (user) => {
-                this.loading = false;
-                this.successMessage = 'Perfil actualizado correctamente';
-                setTimeout(() => this.successMessage = null, 5000);
+                this.profileLoading = false;
+                Swal.fire({
+                    title: '¡Guardado!',
+                    text: 'Cambios guardados correctamente',
+                    icon: 'success',
+                    background: '#1f2937',
+                    color: '#fff',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             },
             error: (error) => {
-                this.loading = false;
-                this.errorMessage = 'Error al actualizar el perfil';
+                this.profileLoading = false;
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Error al actualizar el perfil',
+                    icon: 'error',
+                    background: '#1f2937',
+                    color: '#fff'
+                });
                 console.error('Update error:', error);
             }
         });
@@ -98,26 +115,43 @@ export class Config implements OnInit {
         }
 
         if (this.currentUser.active === false) {
-            alert('Tu cuenta está restringida. No puedes cambiar tu contraseña.');
+            Swal.fire({
+                title: 'Restringido',
+                text: 'Tu cuenta está restringida. No puedes cambiar tu contraseña.',
+                icon: 'error',
+                background: '#1f2937',
+                color: '#fff'
+            });
             return;
         }
 
-        this.loading = true;
-        this.errorMessage = null;
-        this.successMessage = null;
+        this.passwordLoading = true;
 
         const newPassword = this.passwordForm.get('newPassword')?.value;
 
         this.authService.changePassword(this.currentUser.id, newPassword).subscribe({
             next: (user) => {
-                this.loading = false;
-                this.successMessage = 'Contraseña actualizada correctamente';
+                this.passwordLoading = false;
                 this.passwordForm.reset();
-                setTimeout(() => this.successMessage = null, 5000);
+                Swal.fire({
+                    title: '¡Éxito!',
+                    text: 'Contraseña cambiada correctamente',
+                    icon: 'success',
+                    background: '#1f2937',
+                    color: '#fff',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             },
             error: (error) => {
-                this.loading = false;
-                this.errorMessage = 'Error al cambiar la contraseña';
+                this.passwordLoading = false;
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Error al cambiar la contraseña',
+                    icon: 'error',
+                    background: '#1f2937',
+                    color: '#fff'
+                });
                 console.error('Password change error:', error);
             }
         });

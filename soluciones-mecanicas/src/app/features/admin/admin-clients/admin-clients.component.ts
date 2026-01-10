@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../auth.service';
 import { AdminService } from '../admin.service';
 import { User, Motorcycle } from '../../dashboard/dashboard.models';
@@ -8,10 +9,22 @@ import { map, forkJoin } from 'rxjs';
 @Component({
     selector: 'app-admin-clients',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, FormsModule],
     template: `
     <div class="container mx-auto">
-        <h2 class="text-3xl font-bold mb-6 text-white">Administrar Clientes</h2>
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+            <h2 class="text-3xl font-bold text-white flex items-center">
+                <span class="material-symbols-outlined mr-3 text-4xl">group</span>
+                Administrar Clientes
+            </h2>
+            
+            <!-- Search Bar -->
+            <div class="relative w-full md:w-80">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">search</span>
+                <input type="text" [(ngModel)]="searchTerm" placeholder="Buscar por correo o teléfono..." 
+                    class="w-full bg-gray-900 border border-gray-700 text-gray-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block pl-10 p-2.5 shadow-lg">
+            </div>
+        </div>
         
         <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-700">
             <div class="overflow-x-auto">
@@ -27,7 +40,7 @@ import { map, forkJoin } from 'rxjs';
                         </tr>
                     </thead>
                     <tbody class="bg-gray-800 divide-y divide-gray-700">
-                        <ng-container *ngFor="let client of clients">
+                        <ng-container *ngFor="let client of filteredClients">
                             <!-- Client Row -->
                             <tr [class.bg-red-900-20]="!client.active" class="hover:bg-gray-700/50 transition-colors">
                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -107,9 +120,9 @@ import { map, forkJoin } from 'rxjs';
                             </tr>
                         </ng-container>
 
-                        <tr *ngIf="clients.length === 0">
+                        <tr *ngIf="filteredClients.length === 0">
                             <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-                                No se encontraron clientes.
+                                {{ searchTerm ? 'No se encontraron clientes con ese criterio.' : 'No se encontraron clientes.' }}
                             </td>
                         </tr>
                     </tbody>
@@ -128,6 +141,18 @@ export class AdminClients implements OnInit {
     allMotos: Motorcycle[] = [];
     expandedClientIds: Set<string> = new Set();
     isLoading = true;
+    searchTerm = '';
+
+    get filteredClients(): User[] {
+        if (!this.searchTerm.trim()) {
+            return this.clients;
+        }
+        const term = this.searchTerm.toLowerCase().trim();
+        return this.clients.filter(client =>
+            client.email.toLowerCase().includes(term) ||
+            (client.phone && client.phone.toLowerCase().includes(term))
+        );
+    }
 
     constructor(
         private authService: AuthService,
